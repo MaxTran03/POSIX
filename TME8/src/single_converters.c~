@@ -1,0 +1,69 @@
+/**** single_converters.c ****/
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <time.h>
+#include "converters.h"
+#include <string.h>
+
+
+#define _POSIX_SOURCE 1
+
+struct conv_msg c;
+
+int main(int argc, char **argv){
+	int tube[2];
+	char buf[4];
+	
+	buf[0]=argv[1][0];
+	buf[1]=argv[1][1];
+	buf[2]=argv[1][2];
+	buf[3]=argv[1][3];
+	
+
+	double s = atof(argv[2]);
+	printf("Conversion for: %s %s\n", argv[1], argv[2]); 
+
+	
+	if(pipe(tube) == -1){
+		perror("pipe");
+		exit(1);
+	}
+	
+	int k;
+	pid_t pid_fils;
+	
+	struct conv_msg c2;
+	if((pid_fils = fork()) == 0){
+		for(k=0; k<NB_CONVERTERS; k++){
+			c2 = (struct conv_msg)malloc(sizeof(struct conv_msg));
+			char tab[4] = malloc(4*sizeof(char));
+			tab=determine_currency(k);
+			c2.currency = tab;
+			c2.amount =  convert(buf,c2.currency,s);
+			if((write(tube[1], &c2, sizeof(struct conv_msg))) == -1){
+				perror("write");
+				return EXIT_FAILURE;
+			}
+		}
+		
+	}else{
+		struct conv_msg c3;
+		for(k=0; k<NB_CONVERTERS; k++){
+			c3 = (struct conv_msg)malloc(sizeof(struct conv_msg));
+			if((read(tube[0], &c3, sizeof(struct conv_msg))) == -1){
+				perror("read");
+				return EXIT_FAILURE;
+			}else{
+				printf("%s  %.3f\n", c3.currency, c3.amount);
+			}
+		}
+	}
+	
+	wait(NULL);
+	
+	return EXIT_SUCCESS;
+}

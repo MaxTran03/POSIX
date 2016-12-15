@@ -1,0 +1,102 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1 style="text-align: center;">TME2 - Création de processus &amp;  Synchronisation père/fils</h1>
+<h2><br>
+Objectifs</h2>
+<ol>
+    <li>Assimiler les notions associées à la création de processus,  notamment la gestion de la mémoire et l'héritage.</li>
+    <li>Programmer des créations de processus et gérer la  synchronisation entre processus d'une même famille.</li>
+</ol>
+<div style="margin-left: 40px; text-align: justify;">&nbsp;</div>
+<div style="text-align: justify;">&nbsp;</div>
+<h2>Exercices</h2>
+<h3>Exercice 1 : Premières créations de processus</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Rédigez un programme qui crée <span style="font-family: Courier New;"><span class="style1">N_FILS</span></span>  processus fils.</p>
+<p>2 cas à traiter :</p>
+<ol type="a">
+    <li>Le programme utilise la méthode itérative (boucle)</li>
+    <li>Le programme utilise  la méthode récursive.</li>
+</ol>
+<p>N.B: Il ne s'agit pas ici de créer une chaîne de processus : père  crée un fils, fils crée un petit-fils, ... <strong>Tous les processus  fils créés doivent avoir le même père</strong>.</p>
+</div>
+<h3>Exercice 2 : Premières synchronisations père/fils</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Reprenez l’exercice 1, mais cette fois-ci en utilisant <span class="style1">'<span style="font-family: Courier New;">wait</span>'</span> pour :</p>
+<ol type="i">
+    <li>attendre 1 fils quelconque,</li>
+    <li>attendre tous les fils,</li>
+    <li>
+    <div align="justify">attendre le dernier fils créé uniquement.</div>
+    </li>
+</ol>
+</div>
+<h3>Exercice 3 : Arbre de création</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Considérez le programme suivant :</p>
+<blockquote>
+<p class="style1"><span style="font-family: Courier New;">int main (int arg, char* argv[]) {</span></p>
+<blockquote class="style1"><span style="font-family: Courier New;"> int i, j, p; <br>
+<br>
+for (i=0; i&lt;3 ; i++)<br>
+</span><blockquote><span style="font-family: Courier New;"> if ((p=fork ()) == 0) {</span><blockquote><span style="font-family: Courier New;"> printf ("i=%d\n", i);<br>
+j=0; <br>
+while (j&lt;i &amp;&amp; ((p=fork()) == 0)) </span><blockquote><span style="font-family: Courier New;">j++;</span></blockquote><span style="font-family: Courier New;"> if (p==0)</span><blockquote><span style="font-family: Courier New;">printf(“j=%d\n",j);</span></blockquote><span style="font-family: Courier New;">exit(j);</span></blockquote><span style="font-family: Courier New;"> } /* if */ </span></blockquote><span style="font-family: Courier New;">return (0);</span></blockquote>
+<p class="style1"><span style="font-family: Courier New;">}</span></p>
+</blockquote>
+<p><br>
+<em>Observation : Nous considérons que la création d'un processus  fils n'échoue pas.</em></p>
+<p>Combien des processus sont-ils créés ? Représentez l'arborescence  de
+ processus créés en donnant les affichages de chaque processus.</p>
+<p>Modifiez le code pour guarantir la terminaison du processus père  (celui créé à l'appel du <span style="font-family: Courier New;">main</span>) après que <strong>tous</strong> les  autres processus créés  se sont eux-mêmes terminés.</p>
+</div>
+<h3>Exercice 4 : Calculateur de carré magique</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Soit une matrice 3x3 de chiffres entre 0 et 9. Un carré magique  est 
+une matrice carrée dont les sommes des lignes, des colonnes, et des  
+diagonales sont toutes égales. Par exemple, une matrice contenant le  
+même chiffre dans toutes ses cases est forcément magique. Autre exemple :
+  une matrice 2x2 symétrique est forcément magique également.<br>
+On se donne pour départ la matrice :</p>
+<blockquote>
+<p>{{4, a, 8}, {b, c, d}, {2, e, 6}};</p>
+</blockquote>
+<p>Rédigez un programme qui recherche les valeurs {a, b, c, d, e}  faisant de cette matrice un carré magique 3x3. <br>
+La résolution se fera en  force brute : le programme principal crée 10 
+processus fils en  attribuant à chacun une valeur différente pour a, 
+puis se met en attente  de la terminaison de ses fils. Chacun des fils 
+va ensuite calculer la  matrice en fonction de sa valeur de a, vérifier 
+que le carré obtenu est  magique, et si c'est le cas afficher sa 
+solution.<br>
+Lorsque tous ses fils se sont terminés, le programme principal affiche 
+le nombre de carrés magiques qui ont effectivement été trouvés.<br>
+Pour cet exercice, vous pouvez utiliser le fichier <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME2/decoder.c">decoder.c</a></p>
+</div>
+<h3>Exercice 5 : Convertisseur de devises</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Ecrire un programme single_converter qui convertit un montant,  
+exprimé dans une devise quelconque en des devises prédéfinies (cf.  
+fichiers <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME2/converters.c">converters.c</a> &amp; <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME2/converters.h">converters.h</a>), et affiche le résultat de la conversion. <br>
+Les paramètres de conversion sont entrés par l’utilisateur comme  arguments du programme de conversion au format suivant :</p>
+<blockquote>
+<p><span style="font-family: Courier New;">single_converter &lt;<i>devise</i>&gt; &lt;<i>montant</i>&gt;</span></p>
+<blockquote>
+<p>- <i><span style="font-family: Courier New;">devise</span></i> représente la devise source,<br>
+- <i><span style="font-family: Courier New;">montant</span></i> correspond au montant à convertir dans la devise  cible.</p>
+</blockquote>   </blockquote>
+<p>Ce programme met en œuvre les processus suivants:<br>
+Le processus père recueille les paramètres entrés en argument par  
+l'utilisateur, puis crée un fils par devise en leur transmettant les  
+paramètres, et enfin attend la fin de ses fils pour annoncer la fin du  
+traitement de conversion.<br>
+Un processus fils par devise, qui effectue la conversion puis  affiche le résultat.</p>
+<p>Exemple de trace de résultat :</p>
+<p><code><span style="font-family: Courier New;">./single_converter CNY "100.0"</span></code></p>
+<blockquote>
+<p><code><span style="font-family: Courier New;">Conversion for: CNY 100.000<br>
+EUR 10.246<br>
+GBP 6.985<br>
+USD 12.358<br>
+JPY 1406.791<br>
+CNY 100.000<br>
+End of Conversion</span></code></p>
+</blockquote></div></body></html>

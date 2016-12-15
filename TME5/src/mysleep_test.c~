@@ -1,0 +1,19 @@
+#define _POSIX_SOURCE 1
+
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include "mywait.h"
+
+#define NBP 3
+
+int main(){
+	
+	printf("\nAvant mysleep : \n\n");
+	mysleep(2);
+	printf("\nAprès mysleep\n");
+	
+	return 0;
+	
+}

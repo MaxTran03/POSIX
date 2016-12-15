@@ -1,0 +1,115 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+	exo3/affiche.h
+		Définitions (types et opérations) des fonctions affiche1, affiche2, affiche3 et affiche4
+		[Ex. 3]
+		
+	exo3/affiche1.c
+		Programme affichant la fonction
+		[Ex. 3]
+		
+	exo3/affiche2.c
+		Programme affichant la fonction
+		[Ex. 3]
+		
+	exo3/affiche3.c
+		Programme affichant la fonction
+		[Ex. 3]
+		
+	exo3/affiche4.c
+		Programme affichant la fonction
+		[Ex. 3]
+
+	src/fork-exec.c
+		Programme principal (main) pour faire l'affichage de la date en seconde
+		[Ex. 2]
+
+	src/spy-incomplete.c
+		Programme principal (main) pour tester si une matrice est magique
+		[Ex. 5]
+
+== Nouveaux fichiers codés ==
+
+	src/exo1.c
+		Programme permettant de créer une chaine de n fils processus à l'aide de la fonction fork, puis affiche le PID de l'ensemble des descendants créés.
+		[Ex. 1]
+		
+	src/exo2.c
+		Programme qui affiche la date avec deux commandes différentes
+		[Ex. 2]
+		
+	exo3/exo3.c
+		Programme qui permet de compiler les fichiers sources .c en paramètre
+		[Ex. 3]
+	
+	src/exo4.c
+		Programme qui affiche son PID et se lance lui-même au moyen de la fonction exec
+		[Ex. 4]
+		
+	src/spy-incomplete.c
+		Programme qui se comporte comme une surcouche du shell, et exécute les commandes entrées
+		[Ex. 5]
+
+== Directives de 'makefile.ini' ==
+
+
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+== Etat d'avancement ==
+
+
+	Tous les exercices sont terminés et marche correctement ! 
+
+
+== Réponses ==
+
+
+	Exercice 1:
+	
+- Oui cela est possible comme au TME2, on attend tous les fils qui se terminent.
+- Non mais on peut faire l'affichage parallèlement c'est à dire qu'après que le fils soit créé on fait l'affichage et ainsi de suite.	
+	
+	Exercice 2:
+	
+	Le programme donné n'affiche que le résultat de la commande date car elle est exécutée à partir de la fonction exec qui n'exécute pas les lignes de code qui suivent.
+	
+	Exercice 3:
+
+Pour cet exercice, il faut être dans le dossier "TME3/exo3" afin de pouvoir compiler le programme avec la commande suivante:
+
+> gcc -o exo3 exo3.c
+> ./exo3 affiche1.c affiche2.c affiche3.c affiche4.c affiche-main.c
+
+Il faut que l'exécutable soit dans le même répertoire que les fichiers sources à compiler.
+
+	Exercice 4:
+	
+On remarque que les PIDs affichés successivement sont tous identiques car c'est le même processus qui appelle à le programme. L'exécution du nouveau programme par la commande exec sera bien effectuée par le processus appelant, donc il n'y a pas d'autre processus créé.
+
+NB: Il faut bien se positionner uniquement dans "TME3/" pour exécuter l'exercice 4 avec cette commande: 
+> ./bin/exo4
+
+
+
+
+
+
+
+
+
+

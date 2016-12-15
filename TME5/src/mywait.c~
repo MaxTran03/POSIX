@@ -1,0 +1,67 @@
+#define _POSIX_SOURCE 1
+
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#define NBP 3
+
+void f(){
+
+	sleep(1);
+	
+}
+	
+		
+void mywait(){ /* Pas de valeur de retour, ni de paramètre en entrée d'après l'énoncé */
+
+	sigset_t sig;
+	struct sigaction sigact;
+	
+	sigemptyset (&sig);
+	sigprocmask (SIG_SETMASK, &sig, NULL);
+	
+	sigact.sa_mask = sig;
+	sigact.sa_flags = 0;
+	sigact.sa_handler = f;
+	
+	sigaction (SIGCHLD, &sigact, NULL);
+	
+	sigsuspend(&sig);
+	
+}
+
+
+
+int main(){
+	int i = 0;
+	
+	while(i!=NBP){	
+	
+		printf("\nCréation du fils numero : %d\n\n",i);
+		
+		if (fork()==0){
+		
+			printf("%d : Exécution du fils\n",getpid());
+			sleep(2);
+			printf("%d : Fin du fils\n",getpid());
+			//kill(getppid(), SIGCHLD);
+			return 0;
+	
+		}else{
+		
+			printf("%d : Exécution du père avant le mywait\n",getpid());
+			mywait();
+			printf("%d : Exécution du père après le mywait\n\n",getpid());
+		
+		}
+		i++;
+	}
+	
+	return 0;
+	
+}

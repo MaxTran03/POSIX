@@ -1,0 +1,66 @@
+#define _XOPEN_SOURCE 700
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+
+struct stat* st;
+
+
+int main (int argc, char* argv []) {
+	stat(argv[2],st);
+	
+
+	int fich = open(argv[2],O_RDWR);
+
+	
+	if (fich ==-1){
+		printf("Erreur, mauvais nom ou probleme de droits\n");
+		return EXIT_FAILURE;
+	}
+
+	
+	char c = argv[1][0];
+	
+	if(c== 'e' || c== 'E'){
+		remove(argv[2]);
+		return EXIT_SUCCESS;
+	}
+	if(c== 'r' || c== 'R'){
+		if(argc!=4){
+			printf("indiquez le nouveau nom en troisieme parametre\n");
+			return EXIT_FAILURE;
+		}else{
+			rename(argv[2],argv[3]);
+			return EXIT_SUCCESS;
+		}
+	}
+	if(c=='c'||c=='C'){
+		if(argc!=4){
+			printf("indiquez les nouveaux droits en troisieme parametre\n");
+			return EXIT_FAILURE;
+		}else{
+			printf("%s\n",argv[2]);
+			char c2 = argv[3][0];
+			if(c2=='r' || c2=='R'){
+				fchmod(fich,S_IRWXUS_IRGRP|S_IROTH);
+				return EXIT_SUCCESS;
+			}
+			if(c2=='w'||c2=='W'){
+				fchmod(fich,S_IRWXU|S_IRWXG|S_IRWXO);
+				return EXIT_SUCCESS;
+			}
+			
+			printf("Erreur : indiquez r ou w en 3eme parametre\n");
+			return EXIT_FAILURE;
+		}
+	}
+	
+	printf("Erreur : indiquez e r ou c en 1er parametre\n");
+	return EXIT_SUCCESS;
+	
+}

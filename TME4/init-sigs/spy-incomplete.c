@@ -1,0 +1,100 @@
+/**** spy.c ****/
+#define _POSIX_SOURCE 1
+
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#define BUFSZ 1024
+#define WDSZ 24
+#define NBUF 5
+
+sigset_t sig;
+struct sigaction sigact;
+
+int cut_down(char *buf, char **cmd) {
+	char* s = strtok(buf, " \n");
+	int i = 0;
+	while (s != NULL) {
+		cmd[i] = (char*) malloc(sizeof(char) * WDSZ);
+		strcpy(cmd[i], s);
+		s = strtok(NULL, " \n");
+		i++;
+	}
+	cmd[i] = NULL;
+	return i;
+}
+
+void f(){}
+
+int main(int argc, char **argv){
+
+   int or = 1, pid, command_size, i;
+	char buf[BUFSZ];
+	char *command[WDSZ];
+	
+	sigemptyset (&sig);
+	sigprocmask (SIG_SETMASK, &sig, NULL);
+	sigact.sa_mask = sig;
+	sigact.sa_flags = 0;
+	sigact.sa_handler = f;
+	sigaction (SIGTSTP, &sigact, NULL);
+	
+	int total = 0;
+	
+	pid_t tab[NBUF];
+	
+	while (or > 0) {
+ 		while(total!=NBUF){
+			for (i = 0; i < BUFSZ ; i++)
+				buf[i] = '\0';
+        		if ((or = read(STDIN_FILENO, buf, BUFSZ)) == -1)
+				perror("read");
+			else if (or > 0) {
+				command_size = cut_down(buf, (char**)command);
+				if (command_size!=0){
+					if((pid=fork())==0){
+						/*le fils exécute le "exec" approprié*/
+						printf("fils\n");		
+						sigsuspend(&sig);
+						printf("\nCommande :\n");
+						if(command_size == 1){
+							execlp(command[0], command[0], NULL);
+						}else{
+							execvp(command[0], command);
+						}
+					}
+					tab[total]=pid;
+					total++;
+				}
+			}
+		}
+		
+		total = 0;
+		printf("%d\n",pid);
+		
+		/* Endormir le père 1 seconde pour être sûr que tous les processus fils ont fait chacun leur exécution */
+		sleep(1); 
+		
+		/* Envoie d'un signal du père */
+		int j;
+		for(j=0; j<NBUF; j++){
+			kill(tab[j],SIGTSTP);
+			wait(NULL);
+		}
+		
+		/* Libération de la mémoire par le père après avoir attendu les fils*/
+		int k;
+		for(k=0; k<command_size; k++){
+			free(command[k]);
+		}
+		
+    }
+	
+	return 0;
+}
+

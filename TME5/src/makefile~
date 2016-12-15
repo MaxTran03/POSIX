@@ -1,0 +1,16 @@
+CC=gcc -Wall -ansi
+BIN=bin
+INC=include
+OBJ=obj
+SRC=src
+
+
+
+all: test_mywait
+
+
+gcc -c test_mywait.c
+
+gcc -o test_mywait test_mywait.o mywait.o	
+	
+

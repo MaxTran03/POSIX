@@ -1,0 +1,221 @@
+/****** TME7 ******/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <signal.h>
+#include <errno.h>
+#include <limits.h>
+
+int ind_File[10000];
+
+/**
+ * Ouvre un fichier indexe.
+ * Fichier cree ou ecrase => ecrire la taille de l'index en debut de fichier
+ * Sinon => lire la taille de l'index en debut de fichier
+ * 	path   nom du fichier a ouvrir
+ * 	flags  mode d'ouverture du fichier
+ * 	ind    taille de la structure index (ne sert que si le fichier est cree ou ecrase)
+ * 	mode   droits d'acces au fichier
+ * Renvoie le descripteur du fichier ouvert, -1 en cas de pb.
+ */
+/*int indopen(const char *path, int flags, int ind, mode_t mode){
+	int fd;
+	struct stat st;	
+	
+	stat(path,&st);
+	
+	if((access(path, F_OK) == 0) && (!S_ISREG(st.st_mode)))
+		return -1;
+	
+	if((fd = open(path, flags, mode)) == -1)
+		return -1;
+
+	if(read(fd, &ind, sizeof(int)) == 0)
+		write(fd, &ind, sizeof(int));
+	
+	ind_File[fd] = ind;
+	
+	return fd;  
+}*/
+
+int indopen(const char *path, int flags, int ind, mode_t mode)
+{
+	int desc ;
+   int buf;
+   int existe = 0 ;
+   /* Fichier existe ? */
+   existe = !(access(path, F_OK) == -1);
+
+	if( (desc= open(path, flags, mode))==-1 )
+	{
+		perror("Erreur d'ouverture\n") ;
+		return -1 ;
+	}
+	if ( ((existe == 1) && ((flags & O_TRUNC) == O_TRUNC)) || ((existe == 0) && ((flags & O_CREAT) == O_CREAT)) ) /*fichier écrasé ou non existant */
+	{
+		ind_File[desc]= ind ;
+		if(write(desc,&ind,sizeof(int)) ==-1)
+		{
+			perror("write") ;
+			return EXIT_FAILURE ;
+		}
+	}
+	else
+	{
+      if(read(desc,&buf,sizeof(int)) ==-1)
+		{
+			perror("read") ;
+			return EXIT_FAILURE ;
+		}	
+      else
+      {
+         ind_File[desc] = buf;
+      }
+	}
+	return desc ;
+}
+
+/**
+ * Ferme un fichier indexe.
+ * 	fd  le descripteur du fichier a fermer
+ * Renvoie -1 en cas de pb, 0 sinon.
+ */
+int indclose(int fd){
+	return close(fd);
+}
+
+
+/**
+ * Lit des donnees dans un fichier indexe.
+ *	fd	descripteur du fichier lu
+ *	buf     ptr vers les donnees lues
+ *	nbytes  nb d'octets a lire 
+ *		(nbytes doit etre >= a la taille d'index)
+ * Renvoie le nb d'octets lus, 0 si fin de fichier, -1 en cas de pb.
+ */
+ssize_t indread(int fd, void *buf, size_t nbytes){
+  
+	if(nbytes < ind_File[fd]){
+		return -1;
+	}else{
+		return read(fd, buf, ind_File[fd]);
+	}
+}
+
+
+/**
+ * Ecrit des donnees dans un fichier indexe.
+ *	fd	descripteur du fichier modifie
+ *	buf     ptr vers les donnees la ecrire
+ *	nbytes  nb d'octets a ecrire 
+ *		(nbytes doit etre >= a la taille d'index)
+ * Renvoie le nb d'octets ecrits, -1 en cas de pb.
+ */
+ssize_t indwrite(int fd, const void *buf, size_t nbytes){
+  
+	if(nbytes < ind_File[fd]){
+		/*perror("-> indwrite: Nbytes est inférieur à la taille de l'index");*/
+		return -1;
+	}else{
+		return write(fd, buf, nbytes);  
+	}
+}
+
+
+/**
+ * Deplace le curseur dans un fichier indexe.
+ *	fd	descripteur du fichier
+ *	offset  deplacement a effectuer (en nb de structures index)
+ *	whence  positionnement initial du curseur 
+ * Renvoie le deplacement effectif du curseur (en nb d'octets), -1 en cas de pb.
+ */
+off_t indlseek(int fd, off_t offset, int whence){
+	off_t position;
+
+	position = offset * ind_File[fd];
+	
+	if(whence == SEEK_SET){
+		position += sizeof(int);
+	}
+	return lseek(fd, position, whence);
+}
+
+
+/**
+ * Recherche un enregistrement dans un fichier indexe.
+ *	fd	descripteur du fichier
+ *	cmp	fonction de comparaison qui renvoie 1 si les deux arguments sont égaux, 0 sinon
+ *	key	cle de recherche
+ * Renvoie le 1er elt trouve pr lequel la comparaison est correcte, NULL sinon.
+ */
+void *indsearch(int fd, int (*cmp)(void *, void *), void *key){
+	void *word;
+  
+	word = malloc(ind_File[fd]);
+
+	int test;
+	while((test = read(fd, word, ind_File[fd])) != 0){
+		if(test == -1){
+			free(word);
+			return NULL;
+		}
+		
+		if(cmp(word, key) == 1){
+			free(word);
+			return word;
+		}
+	}
+	
+	free(word);
+	
+	return NULL;
+}
+
+
+/**
+ * Change l'indexation d'un fichier.
+ * Les donnees sont recopiees dans un nouveau fichier avec les memes droits d'acces.
+ * 	oldfic	fichier a reindexer
+ *	newfic	fichier resultat
+ *	newind	nouvelle taille de structure index
+ * Si la nouvelle taille est < a la precedente, les donnees supplementaires sont perdues.
+ * 	ex : 	'ftoto' contient des struct toto { int pi; char ps[2]; };
+ *		'ftata' contient des struct tata { int pj; };
+ *		indxchg("ftoto", "ftata", sizeof(struct tata));
+ *		=> les donnees correspondant a ps seront perdues
+ * Renvoie -1 en cas de pb, 0 sinon.
+ */
+int indxchg(char *oldfic, char *newfic, unsigned int newind){
+	struct stat stat_info ;
+	stat(oldfic, &stat_info) ;
+   
+	int indNext = indopen(newfic, O_CREAT | O_TRUNC | O_WRONLY, newind, stat_info.st_mode);
+	int indPrevious = indopen(oldfic, O_RDONLY, newind, stat_info.st_mode);
+	
+	if((indPrevious == -1) || (indNext == -1)){
+		perror("Erreur à l'ouverture du fichier") ;
+		return -1 ;
+	}
+   
+	size_t size_buf;
+	
+	if(ind_File[indPrevious] > newind)
+		size_buf = ind_File[indPrevious];
+	else
+		size_buf = newind;
+	
+	void * buffer = malloc(size_buf);
+	
+	while(indread(indPrevious, buffer, ind_File[indPrevious]) > 0){
+		indwrite(indNext, buffer, (size_t)newind);      
+	}
+   
+	free(buffer);
+
+	return 0 ;
+}

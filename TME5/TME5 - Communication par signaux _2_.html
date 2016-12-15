@@ -1,0 +1,93 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1 style="text-align: center;" align="justify">TME5 - Gestion avancée des signaux</h1>
+<h2 align="justify"><br>
+Objectifs</h2>
+<div align="justify">
+<ol>
+    <li>Approfondir sa connaissance de la communication inter-processus, au moyen de signaux.</li>
+    <li>Programmer des échanges complexes de signaux entre processus.</li>
+    <li>Gérer finement le traitement des signaux dans les programmes.</li>
+</ol>
+</div>
+<div style="margin-left: 40px; text-align: justify;">
+<h2 align="justify">&nbsp;</h2>
+</div>
+<h2 align="justify">Exercices</h2>
+N.B: Merci infiniment à Luciana Arantes pour tous ces excellents sujets d'exercices.<br>
+<h3 align="justify">Exercice 1 : Programmation de l'appel système WAIT</h3>
+<div style="text-align: justify; margin-left: 40px;">La fonction <code>wait</code> permet à un processus père de bloquer en attente de la terminaison de son fils. Un signal <code>SIGCHLD</code> est envoyé au père lors d'une telle terminaison ; cependant, le traitement par défaut est de l’ignorer. <br>
+En changeant le traitement par défaut de <code>SIGCHLD</code>, écrivez une fonction <code><span style="font-family: Courier;">mywait</span></code> qui permet à un processus père d'attendre la terminaison de son fils <i><b>sans</b></i> prendre connaissance de l’état de terminaison. Il va sans dire que la fonction <code>wait</code> ne doit pas apparaître dans le code. <br>
+<span style="font-weight: bold;"><br>
+Observation</span>s : <br>
+<ol>
+    <li><span style="font-style: italic; font-weight: bold;">On ne considère qu’un seul processus fils</span>.</li>
+    <li>Comme dans la fonction <code>wait</code>, il se peut que le 
+processus fils meure avant que le processus père ne décide de prendre 
+connaissance de sa terminaison. Il faut considérer ce problème dans 
+votre solution. Utilisez la fonction <code>sleep</code> pour simuler ce type de retard et tester votre solution.</li>
+    <li>A l'opposé de l'appel <code>wait</code> classique, <code>mywait</code> ne permettra pas de connaitre le code de retour du fils au moment de sa terminaison.</li>
+</ol>
+Ce programme marcherait-il correctement avec plusieurs processus fils ? Justifiez votre réponse.<br>
+&nbsp;</div>
+<h3 align="justify">Exercice 2 : Programmation de l'appel système SLEEP</h3>
+<div style="text-align: justify; margin-left: 40px;">La fonction <code>unsigned int sleep (int sec)</code> endort le processus courant pendant <code><span style="font-style: italic;">sec</span></code>
+ secondes, ou jusqu’à ce qu'un signal soit capturé. La fonction renvoie 0
+ si la durée passée en argument s'est entièrement écoulée, ou le nombre 
+de secondes restantes en cas d’un signal capturé. &nbsp;</div>
+<p>Programmez la fonction <code>mysleep</code> en utilisant la fonction <code>alarm</code> et le signal <code>SIGALRM</code>. Comme recommandé dans la spécification de la fonction <code>sleep</code>, nous considérerons que lorsque l’usager utilise la fonction <code>sleep</code> dans son programme, il n’y utilise ni la fonction <code>alarm </code>ni le signal <code>SIGALRM</code>.</p>
+<div style="text-align: justify; margin-left: 40px;"><br>
+<span style="font-weight: bold;">Observations</span> : Si votre fonction
+ masque des signaux ou remplace le traitement par défaut d’un signal il 
+faut penser à restaurer le masque et/ou les traitements originaux.</div>
+<br>
+<h3 align="justify">Exercice 3 : Synchronisation à 3 processus</h3>
+<div style="text-align: justify; margin-left: 40px;">Le programme ci-dessous (<a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME5/synchro3.c">également disponible en téléchargement</a>)
+ crée deux processus fils. Les trois processus exécutent alors les 
+fonctions calcul_1()&nbsp; et calcul_2() dont les durées sont 
+importantes.<br>
+<br>
+<div style="margin-left: 40px;"><code>void calcul_1 ( ) {<br>
+</code>
+<div style="margin-left: 40px;"><code>int i;<br>
+for (i = 0; i &lt; 1E8; i++);<br>
+</code></div>
+<code> }<br>
+<br>
+void calcul_2 () {<br>
+</code>
+<div style="margin-left: 40px;"><code>int i;<br>
+for (i = 0; i &lt; 1E8; i++);<br>
+</code></div>
+<code>}<br>
+<br>
+int main (int argc, char * argv[]) {<br>
+</code>
+<div style="margin-left: 40px;"><code> int i=0; <br>
+pid_t pid_fils[2];<br>
+<br>
+while ((i&lt;2) &amp;&amp; ((pid_fils[i] = fork())!=0))<br>
+</code>
+<div style="margin-left: 40px;"><code>&nbsp;i++;<br>
+</code></div>
+<code><br>
+calcul_1 ();<br>
+calcul_2 ();<br>
+printf ("fin processus %d \n",i);&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br>
+<br>
+return EXIT_SUCESS;&nbsp;&nbsp;&nbsp;<br>
+</code></div>
+<code> }</code></div>
+<br>
+Nous voulons modifier le programme en utilisant des signaux (<code>SIGUSR1</code> et/ou <code>SIGUSR2</code>) pour synchroniser les processus. Un processus&nbsp;ne commence pas à exécuter la fonction <code>calcul_2</code> sans avoir acquis la certitude que les deux autres processus ont eux aussi terminé d’exécuter la fonction <code>calcul_1</code>.<br>
+<br>
+Question : quel est le nombre minimum de signaux requis pour obtenir une telle synchronisation ?</div>
+<h3 align="justify">Exercice 4 : Contrôle de point de reprise</h3>
+<div style="text-align: justify; margin-left: 40px;">Ecrivez un 
+programme qui arme un temporisateur sur 5 secondes, puis qui reste 
+suspendu en attente de terminaison tant que l'une des conditions 
+suivantes n'est pas remplie :<br>
+<ol>
+    <li>délivrance de <code>NFIN</code> signaux <code>SIGINT</code>,</li>
+    <li>ou réception d'un signal <code>SIGALRM</code>.</li>
+</ol>
+<span style="font-weight: bold;">La comptabilisation du nombre de <code>SIGINT</code> et le traitement de <code>SIGALRM</code> ne doivent pas être effectués dans le handler, mais dans le corps principal du programme</span>. Lors de la délivrance d’un signal, vous utiliserez <code>siglongjmp</code> pour transmettre à la fonction main une valeur correspondant au signal délivré ; parallèlement, vous emploierez <code>sigsetjmp</code> pour définir un point de reprise dans la fonction main.</div></body></html>

@@ -1,0 +1,67 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1 style="text-align: center;" align="justify">TME 10 &amp; 11 - Mémoire partagée et Sémaphores (2)</h1>
+<h1 style="text-align: center;" align="justify">File de  Messages POSIX</h1>
+<h2 align="justify"><br>
+Objectif</h2>
+<div align="justify">
+<div style="margin-left: 40px;">L’objectif de ce TME est de proposer une bibliothèque qui respecte la spécification  POSIX des files de messages.<br>
+<br>
+<b><i>N.B: ce TME se fait sur deux séances ; vous soumettrez votre travail dans une seule archive à la fin de la deuxième séance.</i></b></div>
+</div>
+<div style="margin-left: 40px; text-align: justify;">
+<h2 align="justify">&nbsp;</h2>
+</div>
+<h2 align="justify">Présentation</h2>
+<div style="margin-left: 40px; text-align: justify;">Il s'agit bien  évidemment d'une version très simplifiée. <br>
+<br>
+Pour commencer, les messages ont tous le même format :<br>
+<div style="margin-left: 40px;"><code>typedef char msg_data[32];</code></div>
+<br>
+De plus, chaque file est <span style="font-weight: bold;">entièrement</span>
+ contenue dans un même segment de mémoire partagé : à la fois l'ensemble
+ des messages qu'elle contient, et les méta-données qui la décrivent (<a href="#Repr%C3%A9sentation_de_la_file">voir  plus bas</a>.)<br>
+<br>
+Ensuite, certaines <a href="#Op%C3%A9rations_sur_la_file_">opérations  sur les files</a> ont été <span style="font-weight: bold;">supprimées</span>  : <code>mq_timedsend</code> et <code>mq_timedreceive</code>.<br>
+<br>
+Enfin, on considèrera qu'un même processus ne peut utiliser plus d'une  file à la fois. Par contre, <span style="font-weight: bold;">plusieurs  processus peuvent accéder à la même file de manière concurrente</span>.<br>
+<br>
+<br>
+Une file doit cependant présenter <a href="http://www.opengroup.org/onlinepubs/000095399/basedefs/mqueue.h.html">toutes  les propriétés de la spécification POSIX</a> :<br>
+<ul>
+    <li>Elle doit être bloquante en écriture quand elle est pleine, à moins  qu'elle ne vérifie le flag <code>O_NONBLOCK</code></li>
+    <li>Elle doit être bloquante en lecture quand elle est vide, à  moins qu'elle ne vérifie le flag <code>O_NONBLOCK</code></li>
+    <li>Les messages doivent y être insérés de manière FIFO par ordre de  priorité (<a href="http://www.opengroup.org/onlinepubs/000095399/functions/mq_send.html">cf. la spécification de mq_send</a>)</li>
+</ul>
+Quelques explications suivent pour vous aider à concevoir et implémenter  votre file.</div>
+<br>
+<h3 style="margin-left: 40px;" align="justify"><a name="Représentation_de_la_file"></a>Représentation de la file</h3>
+<div style="text-align: justify; margin-left: 40px;">A chaque file de messages est associé un segment de  mémoire partagée portant le même nom que la file.<br>
+<br>
+Ce segment contient d'une part les méta-données relatives à la file. Ces méta-données sont regroupées dans une structure <code>struct mq_attr</code> que vous pouvez retrouver dans le fichier d'en-tête <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME10/myqueue.h"><code>myqueue.h</code></a> ; vous êtes invités à reprendre ce fichier pour programmer votre file.<br>
+<br>
+Le segment de mémoire partagée contient d'autre part les messages de la 
+file elle-même. Ici encore, vous êtes libres d'organiser le stockage des
+ messages de la manière qui vous convient.</div>
+<br>
+<h3 style="margin-left: 40px;" align="justify"><a name="Opérations_sur_la_file_"></a>Opérations sur la file</h3>
+<div style="text-align: justify; margin-left: 40px;">Les opérations que  vous devez implémenter répondent aux <a href="http://www.opengroup.org/onlinepubs/000095399/basedefs/mqueue.h.html">spécifications  de &lt;mqueue.h&gt; dans la norme POSIX</a>.<br>
+<br>
+Ces opérations sont les suivantes :<br>
+<br>
+<div style="margin-left: 40px;"><code>mqd_t mq_open(const char *nom, int  mq_flags, int mode);<br>
+int mq_close(mqd_t mqdes);<br>
+int mq_unlink(const char *name);<br>
+<br>
+int mq_getattr(mqd_t mqdes, struct mq_attr *mqstat);<span style="font-style: italic;"><br>
+</span>int mq_setattr(mqd_t mqdes, const struct mq_attr *restrict  mqstat, struct mq_attr *restrict omqstat);<br>
+<br>
+int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned  msg_prio);<br>
+<br>
+ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned  *msg_prio);<br>
+<br>
+mqd_t mq_notify(mqd_t mqdes, const struct sigevent *notification); </code></div>
+<br>
+Ces opérations ayant été vues en cours, il n'y a pas lieu ici de les  
+décrire plus avant. Pour tester votre implémentation, nous mettons à 
+votre disposition les fichiers de test <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME10/test1_myqueue.c"><code>test1_myqueue.c</code></a> et <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME10/test2_myqueue.c"><code>test2_myqueue.c</code></a></div>
+<br></body></html>

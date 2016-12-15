@@ -1,0 +1,59 @@
+/**** single_converters.c ****/
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <time.h>
+#include "include/converters.h"
+#include <string.h>
+
+
+#define _POSIX_SOURCE 1
+
+struct conv_msg c;
+
+int main(int argc, char **argv){
+	int tube[2];
+	char* buf;
+	pid_t pid_fils;
+	
+	printf("Conversion for: %s %s\n", argv[1], argv[2]); 
+	
+	c.currency = argv[1];
+	c.amount = atof(argv[2]);
+	
+	if(pipe(tube) == -1){
+		perror("pipe");
+		exit(1);
+	}
+	
+	int k;
+	struct conv_msg c2;
+	
+	if((pid_fils = fork()) == 0){
+		for(k=0; k<NB_CONVERTERS; k++){
+			c2.currency = determine_currency(k);
+			c2.amount = convert(c.currency,c2.currency,c.amount);
+			if((write(tube[1], &c2, sizeof(conv_msg))) == -1){
+				perror("write");
+				return EXIT_FAILURE;
+			}
+		}
+		
+	}else{
+		for(k=0; k<NB_CONVERTERS; k++){
+			if((read(tube[0], &c2, sizeof(conv_msg))) == -1){
+				perror("read");
+				return EXIT_FAILURE;
+			}else{
+				printf("%s  %.3f\n", c2.currency, c2.amount);
+			}
+		}
+	}
+	
+	wait(NULL);
+	
+	return EXIT_SUCCESS;
+}

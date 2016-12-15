@@ -1,0 +1,59 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+	include/converters.h
+		Définitions (types et opérations) des fonctions pour les conversions
+		[Ex. 1, 2]
+
+== Nouveaux fichiers codés ==
+
+	src/capitalize.c
+		Programme principal (main) récupère les messages tapés par l'utilisateur sur l'entrée standard, convertit les caractères minuscules en majuscules, et affiche le résultat sur la sortie standard
+		
+		
+		[Ex. 1]
+
+	src/conversion_client.c
+		Programme principal (main) qui fait la requête, lit et affiche le résultat en utilisant un segment partagé
+		[Ex. 2]
+		
+	src/multi_converter.c
+		Programme principal (main) qui attend la requête d'un client, convertit et modifie le segment partagé
+		[Ex. 2]
+		
+== Directives de 'makefile.ini' ==
+
+
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+== Etat d'avancement ==
+
+
+	Tous les exercices sont terminés et marchent correctement ! 
+
+
+== Réponses ==
+
+
+	PAS DE QUESTION !
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+CC=gcc -Wall -ansi
+BIN=bin
+INC=include
+LIB=lib
+OBJ=obj
+SRC=src
+
+NCODE=decoder
+
+
+all: directories ${BIN}/${NCODE}
+
+
+directories: ${OBJ} ${BIN} ${LIB}
+
+${OBJ}:
+	mkdir ${OBJ}
+${BIN}:
+	mkdir ${BIN}
+${LIB}:
+	mkdir ${LIB}
+
+
+${OBJ}/converters.o: ${INC}/converters.h ${SRC}/converters.c
+	${CC} -c -o ${OBJ}/converters.o ${SRC}/converters.c -I${INC}
+	
+${OBJ}/converters: ${OBJ}/converters.o ${LIB}/${NCODE}.a
+	${CC} -o ${BIN}/converters ${SRC}/converters.o -L${LIB}
+	
+${OBJ}/${NCODE}.o: ${INC}/converters.h ${SRC}/${NCODE}.c
+	${CC} -c -o ${OBJ}/${NCODE}.o ${SRC}/${NCODE}.c -I${INC}
+
+
+${LIB}/${NCODE}.a: ${OBJ}/${NCODE}.o ${OBJ}/converters.o
+	ar rcv ${LIB}/${NCODE}.a ${OBJ}/${NCODE}.o ${OBJ}/converters.o
+	ranlib ${LIB}/${NCODE}.a
+
+${BIN}/${NCODE}: ${OBJ}/${NCODE}.o ${LIB}/${NCODE}.a
+	${CC} -o ${BIN}/${NCODE} ${OBJ}/${NCODE}.o ${OBJ}/converters.o -L${LIB}
+
+
+#run${NCODE}: ${BIN}/${NCODE}
+#	echo "Exécution"
+#	${BIN}/${NCODE}
+
+clean:
+	rm -f ${OBJ}/* ${BIN}/* ${LIB}/*
+
+cleanall:
+	rm -rf ${OBJ} ${BIN} ${LIB}
+	rm -f ${INC}/*~ ${SRC}/*~ *~
+

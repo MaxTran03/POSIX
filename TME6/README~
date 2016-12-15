@@ -1,0 +1,63 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+
+== Nouveaux fichiers codés ==
+
+	src/liste-rep.c
+		Programme permettant de lister les noms des fichiers ou sous-répertoires d'un répertoires.
+		[Ex. 1]
+		
+	src/setfilestats.c
+		Programme permettant d'effacer, de renommer ou de changer les droits d'un fichier existant.
+		[Ex. 2]
+		
+	src/filefusion.c
+		Programme qui cherche le nombre d'occurences d'un mot dans un fichier et affiche la position de chaque occurence.
+		[Ex. 3]
+	
+	src/redirection.c
+		Programme qui redirige la sortie standard vers un fichier passé comme argument à cette fonction et restaure la sortie standard.
+		[Ex. 4]
+		
+
+== Directives de 'makefile.ini' ==
+
+
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+== Etat d'avancement ==
+
+
+	Tous les exercices sont terminés et marchent correctement ! 
+
+
+== Réponses ==
+
+
+	Exercice 1:
+
+On ne peut pas faire une implémentation pour plusieurs fils.
+Si on a plusieurs processus fils qui se terminent en même temps et envoient leur signal SIGCHLD, le handler ne peut pas prendre toutes les occurences des processus fils ! Il ne peut en traiter qu'un seul. Même problème avec les compteurs du TME précédent.
+
+
+	Exercice 3:
+	
+Le nombre minimum de signaux requis pour obtenir une telle synchronisation est 2.
+Le père recoit les signaux des deux autres processus fils une fois qu'ils ont terminé le premier calcul1() ainsi ils pourront tous exécuter le calcul2()
+
+

@@ -1,0 +1,41 @@
+<h1 align="justify" style="text-align: center;">TME7 - Entr&eacute;es / Sorties  (2)</h1>
+<h1 style="text-align: center;">Biblioth&egrave;que de gestion de fichiers  index&eacute;s</h1>
+<br />
+<h2 align="justify"><br />
+Objectifs</h2>
+<div align="justify">
+<ol>
+    <li>Approfondir les notions associ&eacute;es &agrave; la gestion des  entr&eacute;es/sorties.</li>
+    <li>Programmer une biblioth&egrave;que de gestion de donn&eacute;es dans des  fichiers.</li>
+    <li>Pr&eacute;senter un travail donnant lieu &agrave; soutenance.</li>
+</ol>
+</div>
+<div style="margin-left: 40px; text-align: justify;">
+<h2 align="justify">&nbsp;</h2>
+</div>
+<h2 align="justify">Travail &agrave; r&eacute;aliser</h2>
+<div style="text-align: justify; margin-left: 40px;">On cherche &agrave; produire une biblioth&egrave;que de gestion de fichiers index&eacute;s : une surcouche d'appels permettant de d'acc&eacute;der et de modifier des fichiers ayant un format particulier.<br />
+<br />
+Ce format est le suivant :<br />
+<ul>
+    <li>Tout fichier index&eacute; stocke <span style="font-style: italic; font-weight: bold;">de mani&egrave;re contig&uuml;e </span>des donn&eacute;es dont <span style="font-style: italic; font-weight: bold;">le type est homog&egrave;ne</span>, c'est-&agrave;-dire qu'une donn&eacute;e A et une donn&eacute;e B contenues dans un m&ecirc;me fichier index&eacute; sont forc&eacute;ment de m&ecirc;me type. Par contre, deux fichiers index&eacute;s diff&eacute;rents peuvent contenir des donn&eacute;es de types diff&eacute;rents ; par exemple F1 peut contenir des cha&icirc;nes de 24 caract&egrave;res tandis que F2 stocke des donn&eacute;es &agrave; structure complexe de type <code>struct toto</code>.</li>
+    <li>Un fichier index&eacute; <span style="font-style: italic; font-weight: bold;">d&eacute;marre sur un index</span> : la premi&egrave;re donn&eacute;e qu'il contient est un entier ayant pour valeur la taille des donn&eacute;es stock&eacute;es dans le reste du fichier. Pour reprendre l'exemple pr&eacute;c&eacute;dent, la premi&egrave;re donn&eacute;e dans le fichier F1 est un entier de valeur (<code>sizeof(char)*24</code>), et la donn&eacute;e suivante est une cha&icirc;ne de 24 caract&egrave;res ; F2 commence par un entier de valeur (<code>sizeof(struct toto)</code>), et stocke imm&eacute;diatement apr&egrave;s des donn&eacute;es de type <code>struct toto</code>.</li>
+</ul>
+<br />
+La biblioth&egrave;que <b><code>ficindex</code></b> attendue doit permettre de r&eacute;aliser les  op&eacute;rations suivantes :<br />
+<div style="margin-left: 40px;"><code>indopen</code> : ouvrir un fichier index&eacute;<br />
+<code>indclose</code> : fermer un fichier index&eacute;<br />
+<code>indread</code> : lire des donn&eacute;es dans un fichier index&eacute;<br />
+<code>indwrite</code> : &eacute;crire des donn&eacute;es dans un fichier index&eacute;<br />
+<code>indlseek</code> : d&eacute;placer le curseur dans un fichier index&eacute;<br />
+<code>indsearch</code> : rechercher une donn&eacute;e dans un fichier index&eacute;<br />
+<code>indxchg</code> : modifier l'indexation d'un fichier index&eacute;</div>
+<br />
+Pour vous aider, vous disposez du <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME7/ficindex_enonce.h">fichier d'en-t&ecirc;te <code>ficindex.h</code></a> d&eacute;crivant  la biblioth&egrave;que attendue.<br />
+<br />
+Vous disposez &eacute;galement du <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME7/autotestfic.o">fichier objet <code>autotestfic.o</code></a><br />
+Il s'agit en fait d'un programme client dont les sources ne sont pas &agrave; votre disposition. Vous devez imp&eacute;rativement inclure dans votre fichier <code>makefile</code> une directive permettant de produire l'ex&eacute;cutable <code>autotestfic</code> : cet ex&eacute;cutable r&eacute;sulte de l'&eacute;dition des liens issus du fichier <code>autotestfic.o</code> &agrave; l'aide de votre biblioth&egrave;que <code>ficindex</code>.<br />
+A l'ex&eacute;cution, le programme <code>autotestfic</code> v&eacute;rifie que votre biblioth&egrave;que r&eacute;pond bien aux sp&eacute;cifications qui vous ont &eacute;t&eacute; soumises et affiche directement votre <span style="font-style: italic;">note brute </span>dans  le cadre de ce TME.<br />
+<span style="font-weight: bold;"><br />
+N.B:</span> Votre note brute sera ensuite pond&eacute;r&eacute;e &agrave; l'aide d'une soutenance lors de la s&eacute;ance de TME suivante, durant laquelle vous pr&eacute;senterez oralement le code de votre biblioth&egrave;que.</div>
+<br />

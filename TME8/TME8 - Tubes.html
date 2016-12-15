@@ -1,0 +1,91 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1 style="text-align: center;" align="justify">TME8 - Tubes</h1>
+<h2 align="justify"><br>
+Objectif</h2>
+<div align="justify">
+<div style="margin-left: 40px;">L’objectif de ce TME est de programmer 
+une application de conversion de devises en utilisant l’interface de 
+programmation POSIX pour les tubes. <br>
+Pour vous faciliter la vie, des structures de données ainsi que des 
+fonctions attenantes à la conversion de devises sont mises à votre 
+disposition dans les fichiers <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME8/converters.h"><code>converters.h</code></a> et <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME8/converters.c"><code>converters.c</code></a></div>
+</div>
+<div style="margin-left: 40px; text-align: justify;">
+<h2 align="justify">&nbsp;</h2>
+</div>
+<h2 align="justify">Exercices</h2>
+<h3 align="justify">Exercice 1 : Tubes anonymes</h3>
+<div style="text-align: justify; margin-left: 40px;">Ecrire un programme <code>single_converter</code> qui convertit un montant, exprimé dans une devise quelconque en des devises prédéfinies (<a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME8/converters.h"><code>cf. fichier converters.h</code></a>), et affiche le résultat de la conversion. <br>
+<br>
+Les  paramètres de conversion sont entrés par l’utilisateur comme 
+arguments  du programme de conversion au format suivant :&nbsp; <br>
+<div style="margin-left: 40px;"><code>single_converter &lt;<i>devise</i>&gt;  &lt;<i>montant</i>&gt;<br>
+</code>
+<div style="margin-left: 40px;"><i><code>devise</code></i> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;  représente la devise source,<br>
+<i><code>montant</code></i> &nbsp;&nbsp;&nbsp; correspond au montant à  convertir dans la devise cible.</div>
+</div>
+<br>
+Ce programme met en  œuvre 2 processus :<br>
+Le processus père recueille les paramètres qui constituent la requête 
+utilisateur, crée un fils qui effectuera la conversion, puis attend le 
+résultat en lecture dans un tube anonyme avant de l'afficher.<br>
+Le  processus fils effectue la conversion et transmet le résultat à son père  au moyen d'un tube anonyme.<br>
+<br>
+Exemple de trace de résultat :
+<div style="margin-left: 40px;"><code>$ ./single_converter  CNY "100.0"<br>
+P1694&gt; Converting CNY 100.000<br>
+Conversion for: CNY  100.000<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EUR 10.246<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GBP 6.985<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; USD  12.358<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; JPY 1406.791<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CNY 100.000</code></div>
+</div>
+<h3 align="justify">Exercice 2 : Tubes nommés</h3>
+<div style="text-align: justify; margin-left: 40px;">On se propose de reprendre l’exercice 1, avec pour différence que la conversion sera prise en charge par un programme <code>conversion_server</code> qui boucle en attente de requêtes de conversion, ces dernières lui étant soumises au moyen d'un programme <code>conversion_client</code>.<br>
+<br>
+L’utilisateur doit pouvoir ouvrir deux fenêtres de terminal, et lancer 
+un programme serveur dans l’une puis un programme client dans l’autre.<br>
+Format des  commandes de lancement :<br>
+<div style="margin-left: 40px;"><code>$  conversion_server &lt;<i>nom_tube_requete</i>&gt; &lt;<i>nom_tube_reponse</i>&gt;<br>
+$ conversion_client &lt;<i>nom_tube_requete</i>&gt; &lt;<i>nom_tube_reponse</i>&gt;  &lt;<i>devise</i>&gt; &lt;<i>montant</i>&gt;<br>
+</code>
+<div style="margin-left: 40px;"><i><code>nom_tube_requete</code></i><code> </code> &nbsp;&nbsp;&nbsp; contient le chemin du tube par lequel transitent les requêtes.<br>
+<i><code>nom_tube_reponse</code></i>  &nbsp;&nbsp;&nbsp; contient le chemin du tube par lequel transitent les réponses<br>
+<i>devise</i> &nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; représente la 
+devise source, ie. <br>
+<i>montant</i> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;correspond au montant à 
+convertir dans la devise cible.</div>
+</div>
+<br>
+Les paramètres  entrés comme arguments de <code>conversion_client</code>
+ sont transmis au serveur au moyen d'un tube nommé. Le serveur effectue 
+la conversion puis renvoie le résultat au client au moyen d'un autre 
+tube nommé. Enfin le client affiche le résultat reçu en réponse à sa 
+requête.<br>
+Lorsqu’il  est interrompu, le serveur ferme les tubes nommés et les détruit.<br>
+<br>
+&nbsp;</div>
+<h3 align="justify">Exercice 3 : Accès non bloquants<a name="TME8EX3"></a></h3>
+<div style="text-align: justify; margin-left: 40px;">On désire 
+maintenant paralléliser le traitement des conversions. En reprenant 
+l’exercice 2, il va s'agir ici de faire traîter par un processus 
+distinct chaque conversion dans une devise donnée. <br>
+<br>
+Le nouveau programme serveur, nommé <code>multi_converter</code>, crée <code>NB_CONVERTERS</code>
+ processus fils. Chacun de ces fils prend en charge la conversion dans 
+une devise convenue. A chaque réception de requête, le père distribue le
+ travail parmi ses fils au moyen de tubes anonymes. Lorsqu'un fils 
+termine une conversion, il renvoie le résultat au père au moyen d'un 
+tube anonyme qui lui est alloué. Quand le père a reçu le résultat de 
+chacun de ses fils, il renvoie la réponse complète à son client.<br>
+<br>
+Afin d'optimiser  les performances du programme serveur, on tient à ce 
+que les lectures de résultats par le processus père se fassent en mode 
+non-bloquant. Pour que cela fonctionne, à chaque fois qu'un processus 
+fils a fini d'écrire un résultat dans son tube de réponse, il envoie un 
+signal <code>SIGUSR1</code> au père pour lui signifier qu'un résultat est disponible. Tant qu'il n'a pas reçu ses <code>NB_CONVERTERS</code> résultats, le père se met en attente de signaux.<br>
+<br>
+&nbsp;</div></body></html>

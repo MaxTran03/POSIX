@@ -1,0 +1,48 @@
+#define _XOPEN_SOURCE 700
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main (int argc, char* argv []) {
+
+	int fic1=open(argv[1],O_RDONLY);
+	int fic2=open(argv[2],O_RDONLY);
+	int fic3=creat(argv[3],S_IRWXU|S_IRGRP|S_IROTH);
+	
+	char t1;
+	char t2;
+	
+	int size;
+	int size2;
+	while(1){
+		
+		while((size=read(fic1,&t1,1))>0){
+			write(fic3,&t1,1);
+			if(t1==' '){
+				break;
+			}
+		}
+		
+		if(size==0){
+			return EXIT_SUCCESS;
+		}
+		
+		while((size2=read(fic2,&t2,1))>0){
+			write(fic3,&t2,1);
+			if(t2==' '){
+				break;
+			}
+		}
+		
+		if(size==0){
+			return EXIT_SUCCESS;
+		}
+	}
+	
+	return EXIT_SUCCESS;
+	
+}		

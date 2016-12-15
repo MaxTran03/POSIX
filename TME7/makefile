@@ -1,0 +1,40 @@
+CC=gcc -Wall -ansi
+BIN=bin
+INC=include
+LIB=lib
+OBJ=obj
+SRC=src
+
+
+all: directories runstack
+
+
+directories: ${OBJ} ${BIN} ${LIB}
+
+${OBJ}:
+	mkdir ${OBJ}
+${BIN}:
+	mkdir ${BIN}
+${LIB}:
+	mkdir ${LIB}
+
+${OBJ}/ficindex.o: ${INC}/ficindex.h ${SRC}/ficindex.c
+	${CC} -c -o ${OBJ}/ficindex.o ${SRC}/ficindex.c -I${INC}
+
+${BIN}/autotestfic: ${OBJ}/ficindex.o ${OBJ}/autotestfic.o
+	${CC} -o ${BIN}/autotestfic ${OBJ}/ficindex.o ${OBJ}/autotestfic.o
+
+
+autotestfic: ${BIN}/autotestfic
+
+runstack: ${BIN}/autotestfic
+	echo "Testing autotestfic"
+	${BIN}/autotestfic
+
+clean:
+	rm -f ${OBJ}/* ${BIN}/* ${LIB}/*
+
+cleanall:
+	rm -rf ${OBJ} ${BIN} ${LIB}
+	rm -f ${INC}/*~ ${SRC}/*~ *~
+

@@ -1,0 +1,83 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+	include/fifo.h
+		Définitions (types et opérations) pour une file (FIFO) générique
+		[Ex. 6, 7]
+		
+	include/list.h
+		Définitions (types et opérations) pour une liste doublement chaînée générique
+		[Ex. 4, 5, 6]
+
+	include/stack.h
+		Définitions (types et opérations) pour une pile (LIFO) générique
+		[Ex. 1, 2, 5]
+
+	src/fifo_test.c
+		Programme principal (main) pour tester la file générique
+		[Ex. 6]
+
+	src/stack_array.c
+		Implémentation de la pile sous forme de tableau statique
+		[Ex. 1, 2]
+
+	src/stack_test.c
+		Programme principal (main) pour tester la pile générique
+		[Ex. 1, 2, 3, 5]
+
+	src/list_impl.c
+		Squelette d'implémentation de la liste doublement chaînée (à compléter)
+		[Ex. 4, 5, 6, 7]
+
+== Nouveaux fichiers codés ==
+
+	src/stack_list.c
+		Programme utilisant les primitives de list.h pour construire une pile dynamique qui implémente stack.h
+		[Ex. 5]
+	src/fifo_list.c
+		Programme utilisant les primitives de list.h pour construire une file dynamique qui implémente fifo.h
+		[Ex. 6]
+
+== Directives de 'makefile.ini' ==
+
+	runstack
+		Compilation de l'implémentation stack_array.c et du programme de test de la pile (stack_test.c) au format binaire (stack_test)
+		Lancement de l'exécutable stack_test
+	
+	all
+		Renvoi vers 'runstack'
+	
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+== Etat d'avancement ==
+
+	L'exercice 1 (pile sous forme de tableau statique) - OK
+
+	Tous les exercices sont terminés et marche correctement ! 
+
+
+== Réponses ==
+
+	Exercice 7 :
+		Le parcours de toute la liste pour déterminer le nombre d'éléments est trop coûteux.
+		Les modifications à apporter sont de rajouter les lignes de code suivant:
+		
+		l->size = 0; (dans la fonction init_list, cela permettra de connaitre le numéro de l'élément dans l'état où on se trouve. Ce qui est beaucoup plus pratique et moins coûteux)
+		
+		Donc cela changera totalement le code de la fonction list_size, qui se réduira à une seule ligne de code:
+		
+		return l->size;

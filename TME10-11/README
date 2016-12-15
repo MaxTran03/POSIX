@@ -1,0 +1,53 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+	include/myqueue.h:
+          Définitions (types et opérations) pour une bibliothèque de file de message
+    
+   src/myqueue.c:
+          Implémentation des fonctions définies dans myqueue.h
+	 
+   src/test1_myqueue.c:
+          Main de test numero 1
+
+   src/test2_myqueue.c:
+          Main de test numero 2
+
+
+== Nouveaux fichiers codés ==
+
+
+
+== Directives de 'makefile.ini' ==
+
+
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+== Etat d'avancement ==
+
+
+	Tous les exercices sont terminés et marchent correctement ! 
+
+
+== Réponses ==
+
+
+
+
+
+
+

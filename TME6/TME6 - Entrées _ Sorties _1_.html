@@ -1,0 +1,88 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1 style="text-align: center;" align="justify">TME6 - Entrées / Sorties  (1)</h1>
+<h1 style="text-align: center;">Premiers pas avec les fichiers</h1>
+<br>
+<h2 align="justify"><br>
+Objectifs</h2>
+<div align="justify">
+<ol>
+    <li>S'initier  à la gestion des entrées/sorties.</li>
+    <li>Programmer des lectures/écritures de données dans des fichiers.</li>
+</ol>
+</div>
+<div style="margin-left: 40px; text-align: justify;">
+<h2 align="justify">&nbsp;</h2>
+</div>
+<h2 align="justify">Exercices</h2>
+<h3 align="justify">Exercice 1 : Recensement du contenu d'un répertoire</h3>
+<div style="text-align: justify; margin-left: 40px;">Ecrivez un  programme <code>liste-rep</code> pour lister les noms des fichiers ou  sous-répertoires d’un répertoire. <br>
+<br>
+Si le programme est appelé sans argument,&nbsp; le répertoire courant doit  être listé. <br>
+Cependant, l’usager peut passer en paramètre le nom d’un répertoire :<br>
+<ul>
+    <li>si le répertoire en question existe, le programme liste son  contenu ;</li>
+    <li>s’il n’existe pas, le répertoire est créé comme sous-répertoire du  répertoire courant.</li>
+</ul>
+</div>
+<h3 align="justify">Exercice 2 : Méta-données associées à un fichier</h3>
+<div style="text-align: justify; margin-left: 40px;">Vous devez écrire  un programme <code>setfilestats</code> qui permet d’effacer, de renommer ou de  changer les droits d’un fichier existant.<br>
+<br>
+Le programme reçoit comme paramètres :<br>
+<div style="margin-left: 40px;">- 1er paramètre : type d’opération<br>
+<div style="margin-left: 40px;">“E”&nbsp; ou “e”pour effacer <br>
+“R”&nbsp; ou “r”&nbsp; pour renommer <br>
+“C” ou “c” pour changer les droits <b>associés au groupe</b></div>
+- 2ème paramètre : nom du fichier à modifier<br>
+- 3ème paramètre (optionnel) : <br>
+<div style="margin-left: 40px;">nouveau nom du fichier (renommage) <br>
+ou nouveaux droits (modification de droits)<br>
+<div style="margin-left: 40px;">“R” ou “r”&nbsp; (read-only)<br>
+“W” ou “w” (read-write)</div>
+</div>
+</div>
+<br>
+Observations:<br>
+<div style="margin-left: 40px;">- Le nom de fichier passé en deuxième  paramètre ne doit pas être associé à un répertoire (utiliser la fonction <code> stat</code>).<br>
+- Pour le changement de droits en “read-only”, n’oubliez pas de  conserver le droit d’écriture au propriétaire du fichier.<br>
+- L'utilisation d'exec contenant les commandes shell mv, chmod, et rm est <b>interdite</b> !<br>
+&nbsp;</div>
+</div>
+<h3 align="justify">Exercice 3 : Fusion de contenus&nbsp;</h3>
+<div style="text-align: justify; margin-left: 40px;">On désire créer un programme <code>filefusion</code>
+ qui prend deux fichiers sources (F1 et F2) contenant du texte pour 
+fusionner leurs contenus dans un troisième fichier cible (F3).<br>
+Le programme vérifie tout d'abord que tous les noms reçus en arguments 
+correspondent bien à des fichiers réguliers. Le troisième nom de fichier
+ peut ne pas référencer un fichier existant, auquel cas il faut créer un
+ nouveau fichier.<br>
+Ensuite le programme lit le premier mot de F1 et celui de F2, puis les 
+écrit l'un à la suite de l'autre dans F3. Il recommence cette opération 
+pour tous les mots suivants, ce jusqu'à atteindre la fin d'un des deux 
+fichiers sources.<br>
+<b>Remarque</b> : <i>Les fichiers texte considérés ne contiennent que 
+des mots du dictionnaire séparés par des espaces (pas de ponctuation ni 
+de caractères spéciaux)</i><br>
+</div>
+<h3 align="justify">Exercice 4 : Recherche de mot-clé</h3>
+<div style="text-align: justify; margin-left: 40px;">Réalisez un programme <code>findword</code>
+ qui prend en arguments un nom de fichier texte et un mot, cherche le 
+nombre d'occurences d'un mot dans un fichier, et affiche la position de 
+chaque occurence.<br>
+</div>
+<h3 align="justify">Exercice 5 : Redirection de la sortie standard</h3>
+<div style="text-align: justify; margin-left: 40px;">En vous aidant de l'appel <code>dup2</code>, écrivez une fonction <code>rediriger_stdout(char *nom_fichier) </code>pour rediriger la sortie standard vers un fichier passé comme argument à cette fonction. On considère que le fichier <code>nom_fichier</code> n’existe pas. <br>
+Ecrivez ensuite une deuxième fonction pour restaurer la sortie standard <code> restaurer_stdout()</code>. <br>
+<br>
+<div style="margin-left: 40px;">Exemple : en exécutant le code suivant, la phrase «<code>après la redirection</code>» ne sera pas affichée à l’écran mais écrite dans le fichier <code>fichier.out</code>
+<div style="margin-left: 40px;"><code>int main (int argc, char* argv []) {<br>
+</code>
+<div style="margin-left: 40px;"><code>printf ("avant la redirection \n") ;<br>
+rediriger_stdout ("fichier.out") ;<br>
+printf ("après la redirection \n") ;<br>
+restaurer_stdout ( ) ;<br>
+printf ("après avoir restauré stdout \n") ;<br>
+return EXIT_SUCCESS ;<br>
+</code></div>
+<code> }</code></div>
+</div>
+</div></body></html>

@@ -1,0 +1,63 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+
+int main(int argc, char **argv) {
+	
+	/*Créer les fichiers objets dans le meme repertoire que les fichiers sources*/
+	
+	int i;
+	for(i=1; i<argc;i++){
+		
+		if(fork()==0){
+			printf("je suis le fils numero %d de pid %d \n", i, getpid());
+			execlp("gcc", "gcc", "-c",argv[i], NULL);
+			perror("execlp");
+		}	
+	}
+	
+	int j;
+	for(j=1; j<argc; j++){
+		wait(NULL);
+	}
+	
+	/*Mettre dans le tableau tous les noms de fichiers objets*/
+	
+	int k;
+	char **tex = malloc((argc-1)*sizeof(char*));
+	char **tobj = malloc((argc+2)*sizeof(char*));
+	tobj[0]="gcc";
+	tobj[1]="-o";
+	tobj[2]="main_test";
+	
+
+	for(k=1; k<argc; k++){
+		tex[k-1]=calloc(strlen(argv[k])-2, sizeof(char));
+		tobj[k+2]=calloc(strlen(argv[k]), sizeof(char));
+		strncpy(tex[k-1], argv[k], strlen(argv[k])-2);
+		strcpy(tobj[k+2], tex[k-1]);
+		strcat(tobj[k+2], ".o"); 
+		
+	}
+	
+	/*Execution de la commande puis libération de la mémoire*/
+	
+	if(fork()!=0){
+		execvp("gcc",tobj);
+		perror("execvp");
+	}else{
+		sleep(2); /*"Attendre que le père exécute la commande demandée*/
+		int m;
+		for(m=1;m<argc;m++){
+			free(tobj[k+2]);
+			free(tex[k-1]);
+		}
+		free(tex);
+		free(tobj);
+	}
+	return EXIT_SUCCESS;	
+	
+}		

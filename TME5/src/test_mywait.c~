@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include "mywait.h"
+
+#define NBP 3
+
+int main(){
+	int i = 0;
+	
+	while(i!=NBP){	
+	
+		printf("\nCréation du fils numero : %d\n\n",i);
+		
+		if (fork()==0){
+		
+			printf("%d : Exécution du fils\n",getpid());
+			sleep(2);
+			printf("%d : Fin du fils\n",getpid());
+			kill(getppid(), SIGCHLD);
+			return 0;
+	
+		}else{
+		
+			printf("%d : Exécution du père avant le mywait\n",getpid());
+			mywait();
+			printf("%d : Exécution du père après le mywait\n\n",getpid());
+		
+		}
+		i++;
+	}
+	
+	return 0;
+	
+}

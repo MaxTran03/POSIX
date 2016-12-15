@@ -1,0 +1,78 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1 style="text-align: center;" align="justify">TME9 - Mémoire partagée et Sémaphores</h1>
+<h2 align="justify"><br>
+Objectif</h2>
+<div align="justify">
+<div style="margin-left: 40px;">L’objectif de ce TME est de programmer 
+des applications POSIX reprenant des problèmes classiques associés aux 
+sémaphores et à la mémoire partagée.</div>
+</div>
+<div style="margin-left: 40px; text-align: justify;">
+<h2 align="justify">&nbsp;</h2>
+</div>
+<h2>Remarque importante</h2>
+<div style="margin-left: 40px;">Les  sémaphores, et les segments de mémoire partagée que vous créez à chaque  exécution doivent impérativement être <b>détruits en fin de programme</b>.
+  Si vous ne respectez pas cette règle, vous risquez de vous retrouver  
+face à des comportements incohérents liés à des variables dont les  
+valeurs sont restées en mémoire après la terminaison du programme qui  
+les a créées.<br>
+Vous pouvez trouver les éléments rémanents dans le répertoire <code>/dev/shm</code>. Pour les détruire, il suffit de les effacer.<br>
+<br>
+Par ailleurs, n'oubliez pas qu'au moment de l'édition de lien lors de la
+  compilation de vos binaires, il faut préciser que vous utilisez la  
+bibliothèque RealTime ('<code>-lrt</code>' en fin de ligne dans votre fichier <code>Makefile</code>)&nbsp;</div>
+<h2>&nbsp;</h2>
+<h2 align="justify">Exercices</h2>
+<h3 align="justify">Exercice 1 : Producteur / Consommateur</h3>
+<div style="text-align: justify; margin-left: 40px;">Ecrire un programme <code>capitalize</code>
+ qui récupère les messages tapés par l'utilisateur sur l'entrée 
+standard, convertit les caractères minuscules en majuscules, et affiche 
+le résultat sur la sortie standard.<br>
+<br>
+Ce programme met en œuvre 2 processus (un père et son fils) :<br>
+<div style="margin-left: 40px;">Le processus fils lit en boucle infinie 
+sur l'entrée standard, et passe les chaînes de caractères à son père au 
+moyen d'un segment de mémoire partagée. <br>
+Le père effectue lui aussi une boucle infinie dans laquelle il vient 
+lire les messages en mémoire partagée, convertit les caractères 
+minuscules en majuscules, et affiche le résultat.</div>
+</div>
+<h3 align="justify"><br>
+Exercice 2 : Lecteur / Ecrivain</h3>
+<div style="text-align: justify; margin-left: 40px;">On se propose de reprendre l’<a href="http://australe.upmc.fr/access/content/group/LI356_01/Sujets%20de%20TME/TME8%20-%20Tubes#TME8EX3">exercice 3 du TME 8</a>, avec pour différence que les échanges entre les processus se feront au moyen de segments de mémoire partagée.<br>
+<br>
+L’utilisateur doit pouvoir ouvrir deux fenêtres de terminal, et lancer 
+un programme serveur dans l’une puis un programme client dans l’autre.<br>
+Format des commandes de lancement :<br>
+<div style="margin-left: 40px;"><code>$ multi_converter &lt;<span style="font-style: italic;">nom_segment_echanges</span>&gt;<br>
+$ conversion_client &lt;<span style="font-style: italic;">nom_segment_</span><span style="font-style: italic;">echanges</span>&gt; &lt;<span style="font-style: italic;">devise</span>&gt; &lt;<span style="font-style: italic;">montant</span>&gt;</code><br>
+<div style="margin-left: 40px;">-&nbsp;&nbsp;&nbsp; <code><span style="font-style: italic;">nom_segment_</span><span style="font-style: italic;">echanges</span></code><span style="font-style: italic;"> </span>contient
+ le chemin du&nbsp;segment de mémoire partagé par lequel transitent les 
+requêtes et les réponses entre le programme client et le programme 
+serveur.<br>
+-&nbsp;&nbsp;&nbsp; <code><span style="font-style: italic;">devise</span></code> représente la devise source<br>
+-&nbsp;&nbsp;&nbsp; <code><span style="font-style: italic;">montant</span></code> correspond au montant à convertir dans la devise cible.</div>
+</div>
+<br>
+Les paramètres entrés comme arguments de <code>conversion_client</code> 
+sont transmis au serveur au moyen d'un segment de mémoire partagée. Le 
+serveur effectue la conversion puis renvoie le résultat au client <span style="font-weight: bold;">dans ce même segment</span>. Enfin le client affiche le résultat reçu en réponse à sa requête.<br>
+<br>
+Le programme serveur, nommé <code>multi_converter</code>, crée <code>NB_CONVERTERS</code>
+ processus fils qui bouclent en attente de requêtes de conversion. 
+Chacun de ces fils prend en charge la conversion dans une devise 
+convenue. A chaque réception de requête, le père distribue le travail 
+parmi ses fils au moyen d'un <span style="font-weight: bold;">unique</span>
+ segment de mémoire partagée (ie. segment commun pour tous les fils). 
+Lorsqu'un fils termine une conversion, il écrit le résultat en mémoire 
+partagée. Quand chacun de ses fils a écrit son résultat en mémoire 
+partagée, le père vient lire l'ensemble des résultats et renvoie la 
+réponse complète au client.<br>
+<br>
+Lorsqu’il est interrompu, le serveur ferme et détruit&nbsp;les IPCs utilisés.<br>
+<br>
+N.B: Cette nouvelle architecture <span style="font-weight: bold;">ne requiert plus l'utilisation de signaux</span>
+ pour prévenir le père qu'un résultat de conversion est disponible. Vous
+ êtes donc invités à ne pas utiliser de signaux dans votre programme.<br>
+&nbsp;</div>
+<br></body></html>

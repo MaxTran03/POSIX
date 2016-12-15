@@ -1,0 +1,115 @@
+CC=gcc -Wall -ansi
+BIN=bin
+INC=include
+OBJ=obj
+SRC=src
+
+
+
+all: directories ${BIN}/init-sig.1 ${BIN}/init-sig.2 ${BIN}/init-sig.3 ${BIN}/init-sig.4 ${BIN}/init-sig.5 ${BIN}/voodoo ${BIN}/pending-signals ${BIN}/pending-signals-2 ${BIN}/pending-signals-3 ${BIN}/accountant ${BIN}/spy-incomplete
+
+
+directories: ${OBJ} ${BIN}
+
+${OBJ}:
+	mkdir ${OBJ}
+${BIN}:
+	mkdir ${BIN}
+
+
+## Exercice 1 ##
+${BIN}/init-sig.1: ${OBJ}/init-sig.1.o
+	${CC} -o ${BIN}/init-sig.1 ${OBJ}/init-sig.1.o
+	
+${OBJ}/init-sig.1.o: ${SRC}/init-sig.1.c
+	${CC} -c -o ${OBJ}/init-sig.1.o ${SRC}/init-sig.1.c -I${INC}
+	
+	
+${BIN}/init-sig.2: ${OBJ}/init-sig.2.o
+	${CC} -o ${BIN}/init-sig.2 ${OBJ}/init-sig.2.o
+	
+${OBJ}/init-sig.2.o: ${SRC}/init-sig.2.c
+	${CC} -c -o ${OBJ}/init-sig.2.o ${SRC}/init-sig.2.c -I${INC}
+	
+	
+${BIN}/init-sig.3: ${OBJ}/init-sig.3.o
+	${CC} -o ${BIN}/init-sig.3 ${OBJ}/init-sig.3.o
+	
+${OBJ}/init-sig.3.o: ${SRC}/init-sig.3.c
+	${CC} -c -o ${OBJ}/init-sig.3.o ${SRC}/init-sig.3.c -I${INC}
+	
+	
+${BIN}/init-sig.4: ${OBJ}/init-sig.4.o
+	${CC} -o ${BIN}/init-sig.4 ${OBJ}/init-sig.4.o
+	
+${OBJ}/init-sig.4.o: ${SRC}/init-sig.4.c
+	${CC} -c -o ${OBJ}/init-sig.4.o ${SRC}/init-sig.4.c -I${INC}
+	
+	
+${BIN}/init-sig.5: ${OBJ}/init-sig.5.o
+	${CC} -o ${BIN}/init-sig.5 ${OBJ}/init-sig.5.o
+	
+${OBJ}/init-sig.5.o: ${SRC}/init-sig.5.c
+	${CC} -c -o ${OBJ}/init-sig.5.o ${SRC}/init-sig.5.c -I${INC}	
+
+
+## Exercice 2 ##
+${BIN}/voodoo: ${OBJ}/voodoo.o
+	${CC} -o ${BIN}/voodoo ${OBJ}/voodoo.o
+	
+${OBJ}/voodoo.o: ${SRC}/voodoo.c
+	${CC} -c -o ${OBJ}/voodoo.o ${SRC}/voodoo.c -I${INC}
+
+
+## Exercice 3 ##
+${BIN}/pending-signals: ${OBJ}/pending-signals.o
+	${CC} -o ${BIN}/pending-signals ${OBJ}/pending-signals.o
+	
+${OBJ}/pending-signals.o: ${SRC}/pending-signals.c
+	${CC} -c -o ${OBJ}/pending-signals.o ${SRC}/pending-signals.c -I${INC}
+
+
+## Exercice 4 ##
+${BIN}/pending-signals-2: ${OBJ}/pending-signals-2.o
+	${CC} -o ${BIN}/pending-signals-2 ${OBJ}/pending-signals-2.o
+	
+${OBJ}/pending-signals-2.o: ${SRC}/pending-signals-2.c
+	${CC} -c -o ${OBJ}/pending-signals-2.o ${SRC}/pending-signals-2.c -I${INC}
+
+
+## Exercice 5 ##
+${BIN}/pending-signals-3: ${OBJ}/pending-signals-3.o
+	${CC} -o ${BIN}/pending-signals-3 ${OBJ}/pending-signals-3.o
+	
+${OBJ}/pending-signals-3.o: ${SRC}/pending-signals-3.c
+	${CC} -c -o ${OBJ}/pending-signals-3.o ${SRC}/pending-signals-3.c -I${INC}
+	
+	
+## Exercice 6 ##
+${BIN}/accountant: ${OBJ}/accountant.o
+	${CC} -o ${BIN}/accountant ${OBJ}/accountant.o
+	
+${OBJ}/accountant.o: ${SRC}/accountant.c
+	${CC} -c -o ${OBJ}/accountant.o ${SRC}/accountant.c -I${INC}
+	
+	
+## Exercice 7 ##	
+${BIN}/spy-incomplete: ${OBJ}/spy-incomplete.o
+	${CC} -o ${BIN}/spy-incomplete ${OBJ}/spy-incomplete.o
+	
+${OBJ}/spy-incomplete.o: ${SRC}/spy-incomplete.c
+	${CC} -c -o ${OBJ}/spy-incomplete.o ${SRC}/spy-incomplete.c -I${INC}
+	
+
+
+#run${NCODE}: ${BIN}/${NCODE}
+#	echo "Exécution"
+#	${BIN}/${NCODE}
+
+clean:
+	rm -f ${OBJ}/* ${BIN}/*
+
+cleanall:
+	rm -rf ${OBJ} ${BIN}
+	rm -f ${INC}/*~ ${SRC}/*~ *~
+

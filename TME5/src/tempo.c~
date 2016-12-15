@@ -1,0 +1,71 @@
+#define _POSIX_SOURCE 1
+
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <setjmp.h>
+
+#define NFIN 10
+
+sigset_t sig;
+sigset_t sig2;
+int sig1;
+struct sigaction sigact;
+struct sigaction sigactint;
+struct sigaction sigactalrm;
+static sigjmp_buf env;
+
+void f(int sig1){
+	siglongjmp(env,sig1);
+}
+
+int main(){
+	int cpt = 0;
+	
+	sigemptyset(&sig);
+	sigaddset(&sig,SIGINT);
+	sigaddset(&sig,SIGALRM);
+	sigprocmask (SIG_BLOCK, &sig, &sig2);
+	
+	sigact.sa_mask = sig;
+	sigact.sa_flags = 0;
+	sigact.sa_handler = f;
+	
+	sigaction (SIGALRM, &sigact, &sigactalrm);
+	sigaction (SIGINT, &sigact, &sigactint);
+	
+	printf("Temporisation de 5 secondes\n");
+	
+	sigdelset(&sig,SIGINT);
+	sigdelset(&sig,SIGALRM);
+	
+	alarm(5);
+	
+	printf("Après la temporisation\n");
+	
+	while((cpt != NFIN)){
+		if(sig1=sigsetjmp(env,1)){		
+			if(sig1==SIGINT){
+				cpt++;
+				continue;
+			}
+			if(sig1==SIGALRM){
+				printf("Signal SIGALRM\n");
+				return EXIT_SUCCESS;
+			}
+		}
+		sigsuspend(&sig);
+	}
+	
+	sigprocmask (SIG_SETMASK, &sig2, NULL);
+	sigaction (SIGALRM, &sigactalrm, NULL);
+	sigaction (SIGINT, &sigactint, NULL);
+	
+	return EXIT_SUCCESS;
+	
+}
+

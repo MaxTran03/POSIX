@@ -1,0 +1,163 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+	init-sigs/init-sig.1.c
+		[Ex. 1]
+		
+	init-sigs/init-sig.2.c
+		[Ex. 1]
+		
+	init-sigs/init-sig.3.c
+		[Ex. 1]
+		
+	init-sigs/init-sig.4.c
+		[Ex. 1]
+		
+	init-sigs/init-sig.5.c
+		[Ex. 1]
+
+	init-sigs/voodoo.c
+		[Ex. 2]
+
+	
+== Nouveaux fichiers codés ==
+
+	init-sigs/pending-signals.c
+		Programme permettant d'afficher si des signaux lui ont été envoyés, mais n'ont pas encore été pris en compte.
+		[Ex. 3]
+		
+	init-sigs/pending-signals-2.c
+		Ce programme reprend le programme précédent, pending-signals, mais dont le comportement par défaut lors de la réception d'un SIGINT ou d'un SIGQUIT est de ne rien faire.
+		[Ex. 4]
+		
+	init-sigs/pending-signals-3.c
+		Ce programme reprend le programme précédent, pending-signals-2,mais dont le comportement par défaut lors de la délivrance d'un SIGINT est d'incrémenter un compteur et d'afficher la valeur de ce compteur.
+		[Ex. 5]
+	
+	init-sigs/accountant.c
+		Programme corrigeant le problème de pending-signals-3, qui comptabilise le nombre de signaux délivrés.
+		[Ex. 6]
+		
+	init-sigs/spy-incomplete.c
+		Programme qui se comporte comme une surcouche du shell, et exécute les commandes entrées
+		[Ex. 7]
+
+== Directives de 'makefile.ini' ==
+
+
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+== Etat d'avancement ==
+
+
+	Tous les exercices sont terminés et marchent correctement ! 
+	
+	Attention: Le dossier source a pour nom de dossier "init-sigs". C'est dans ce dossier où se trouve tous les fichiers .c
+
+
+== Réponses ==
+
+
+	Exercice 1:
+	-----------
+	
+1)
+init-sig.1: Il n'y a pas d'affichage puisque la fonction pause() suspend le programme exécuté jusqu'à qu'il reçoit un signal.
+
+2)
+init-sig.2: Ce programme consiste à se terminer lorsqu'il reçoit le signal SIGINT. Tout autre signal "CTRL+Z" ou "CTRL+\" ne marche pas pour terminer le processus. Donc il n'y aura pas d'affichage après le premier sigsuspend(&sig).
+
+3)
+init-sig.3: Ce programme ne permet pas de terminer le processus avec un signal SIGINT, les autres signaux peuvent terminer le processus exécuté. Après un délai de 5 secondes, le signal alarm est ignoré.
+Donc il n'y aura pas d'affichage après le sigsuspend(&sig). Il faut donc utiliser CTRL+\
+
+4)
+init-sig.4: Ce programme consiste à changer l'action du signal, qui sera ignoré d'où l'affichage suivant:
+
+> AVANT sigsuspend
+> ^Cn = 0; Signal recu : 2
+> APRES 1er sigsuspend
+> ^C^C^\^\^Z
+
+Donc il faut ouvrir un autre terminal afin de tuer le processus. Le signal est ignoré car on entre dans le if:
+
+sigact.sa_handler = SIG_IGN;
+sigaction (SIGINT, &sigact, NULL);
+
+Si nous voulons entrer dans le else, il est nécéssaire de rajouter les lignes de code suivantes entre le premier sigsuspend et le deuxième printf:
+
+sigprocmask (SIG_SETMASK, &sig, NULL);
+sigact.sa_mask = sig;
+sigact.sa_flags = 0;
+sigact.sa_handler = sigint_handler;
+sigaction (SIGINT, &sigact, NULL);
+
+Afin de pouvoir refaire appel à la fonction et entrer dans le else pour modifier l'action du signal à son action par défaut.
+
+> AVANT sigsuspend
+> ^Cn = 0; Signal recu : 2
+> APRES 1er sigsuspend
+> ^Cn = 1; Signal recu : 2
+> APRES 2e sigsuspend
+> ^C
+> 3001048@ppti-14-303-12:/users/nfs/Etu8/3001048/LI356/TME4/init-sigs$
+
+
+5)
+init-sig.5: Ce programme attend toujours un signal alarm ou un signal SIGINT. Tous les 5 secondes, il y a un affichage pour l'alarme et un affichage à chaque signal SIGINT envoyé.
+
+
+	
+	Exercice 2:
+	-----------
+	
+Il n'est pas possible de tuer un processus zombie avec un SIGKILL. Le seul moyen est de tuer/terminer le processus père pour tuer le processus zombie.
+
+
+	
+	Exercice 3:
+	-----------
+
+Si on décide de démasquer SIGINT et SIGQUIT grâce à la ligne de code suivante:
+sigprocmask (SIG_UNBLOCK, &sig, NULL);
+
+Cela remet la constante SIG_UNBLOCK à 1 ce qui supprime de la liste des signaux pendants bloquants.
+Ils sont démasqués donc ils ne sont plus pendants.
+Donc on a pas d'affichage.
+
+
+
+	Exercice 4:
+	-----------
+
+Oui ce nouveau programme résout le problème de l'exercice 3, car on redéfinit le signal en SIG_IGN.
+
+
+
+	Exercice 5:
+	-----------
+	
+1) La valeur maximale affichée pour le compteur est 1 car en exécutant CTRL+C dans un laps de temps, on ne traite qu'une seule fois le signal c'est pourquoi on exécute 
+
+2) Oui ce nouveau programme résout bien le problème de l'exercice 3 puisque là aussi nous redefinissons le signal.
+
+
+
+
+
+
+

@@ -1,0 +1,98 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+	include/converters.h
+		Définitions (types et opérations) pour convertisseur de devise
+		[Ex. 5]
+
+	src/converters.c
+		Programme principal (main) pour tester la conversion de devise, et fonction pour convertir les devises
+		[Ex. 5]
+
+	src/decoder.c
+		Programme principal (main) pour tester si une matrice est magique
+		[Ex. 4]
+
+== Nouveaux fichiers codés ==
+
+	src/exo1.c
+		Programme implémentant les créations de processus avec les méthodes itératives et récursives
+		[Ex. 1]
+	src/exo2.c
+		Programme de synchronisations père/fils utilisant wait
+		[Ex. 2]
+	src/exo3.c
+		Programme de création d'arbre
+		[Ex. 3]
+	src/single_converters.c
+		Programme permettant de convertir les devises
+		[Ex. 5]
+
+== Directives de 'makefile.ini' ==
+
+
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+	NCODE
+		Variable à changer pour déterminer quel programme à compiler.
+		Liste des programmes: {decoder, exo1, exo2, exo3, single_converters}
+		Exemple: Pour compiler l'exercice 1, on met la variable NCODE à exo1
+		-> NCODE=exo1
+		
+		Le programme converters est directement compiler dans le makefile
+
+== Etat d'avancement ==
+
+
+	Tous les exercices sont terminés et marche correctement ! 
+
+
+== Réponses ==
+
+	Exercice 2:
+	
+	Nous avons ajouté des fonctions sleep() pour avoir une preuve de la validité et de la terminaison des programmes ! Les sleep() sont initialisés de façon aléatoire pour éviter que les processus fils aient le même temps d'exécution et ainsi éviter des résultats répétitifs.
+	Par exemple, pour le cas où le père doit attendre le dernier fils créé avant de terminer, le dernier fils ne termine pas forcément après les autres fils précédement créés.
+
+	Exercice 3:
+
+Avec le code donné, il y a 7 processus créés dont 1 étant le père et les 6 autres les fils, petit-fils, etc.
+
+		P
+		|
+	-----------------
+	|	|	|	. . .
+	F    F	F
+		|	|
+		PF	PF
+			|
+			PPF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

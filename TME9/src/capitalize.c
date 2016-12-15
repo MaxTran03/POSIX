@@ -1,0 +1,140 @@
+#define _OPEN_SOURCE 700
+#include <semaphore.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <setjmp.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <fcntl.h>
+
+#define nbchar 1024
+
+static jmp_buf env;
+
+void f(){
+	longjmp(env,0);
+}
+
+int main(){
+
+	int fd;
+	char *sp="";
+	
+	sigset_t sig;
+	struct sigaction sigact;
+	struct sigaction old;
+	
+	sigfillset (&sig);
+	sigdelset(&sig,SIGINT);
+	sigdelset(&sig,SIGQUIT);
+	
+	sigact.sa_mask = sig;
+	sigact.sa_flags = 0;
+	sigact.sa_handler = f;
+	sigaction (SIGINT, &sigact, &old);
+	sigaction (SIGQUIT, &sigact, &old);
+	
+	int fdm1, fdm2;
+	
+	if((fdm1=shm_open("mut1",O_RDWR|O_CREAT,S_IRWXU))==-1){
+		perror("shm_open");
+		return EXIT_FAILURE;
+	}
+	
+	if(ftruncate(fdm1,sizeof(sem_t))==-1){
+		perror("ftruncate");
+		return EXIT_FAILURE;
+	}
+	
+	if((fdm2=shm_open("mut2",O_RDWR|O_CREAT,S_IRWXU))==-1){
+		perror("shm_open");
+		return EXIT_FAILURE;
+	}
+	
+	if(ftruncate(fdm2,sizeof(sem_t))==-1){
+		perror("ftruncate");
+		return EXIT_FAILURE;
+	}
+	
+	
+	sem_t *mutex = mmap(NULL,sizeof(sem_t), PROT_READ|PROT_WRITE,MAP_SHARED, fdm1, 0);
+	sem_init(mutex,1,0);
+	
+	sem_t *s = mmap(NULL,sizeof(sem_t), PROT_READ|PROT_WRITE,MAP_SHARED, fdm2, 0);
+	sem_init(s,1,1);
+	
+	if((fd=shm_open("monshm",O_RDWR|O_CREAT,S_IRWXU))==-1){
+		perror("shm_open");
+		return EXIT_FAILURE;
+	}
+	
+	if(ftruncate(fd,nbchar*sizeof(char))==-1){
+		perror("ftruncate");
+		return EXIT_FAILURE;
+	}
+	
+	if((sp=mmap(NULL,nbchar*sizeof(char),PROT_READ|PROT_WRITE,MAP_SHARED,fd,0))==MAP_FAILED){
+		perror("mmap");
+		return EXIT_FAILURE;
+	}
+	
+	printf("\nPour quitter proprement, faire 'Ctrl + c' ou 'Ctrl + ]'\n");
+	
+	if(fork()==0){
+	
+			
+		while(1){
+			sem_wait(s);
+			if(read(STDIN_FILENO,sp,nbchar*sizeof(char))==-1){
+				perror("read");
+				return EXIT_FAILURE;
+			}
+			sem_post(mutex);
+			
+		}
+		
+	}else{
+	
+		while(1){
+			
+			if(setjmp(env)!=0){
+				break;
+			}
+			sem_wait(mutex);
+			if(strlen(sp)>0){
+				int i=0;
+				char mot[strlen(sp)];
+				while(i<nbchar){
+					mot[i]=toupper(sp[i]);
+					if(mot[i]=='\n'){
+						mot[i]='\0';
+					}
+					i++;
+				}
+				printf("%s\n",mot);
+			}
+			sem_post(s);
+		}
+	
+	}
+	
+	sigaction (SIGINT, &old, NULL);
+	sigaction (SIGQUIT, &old, NULL);
+	
+	munmap(sp,nbchar*sizeof(char));
+	shm_unlink("monshm");
+	
+	shm_unlink("mut1");
+	shm_unlink("mut2");
+	
+	sem_destroy(s);
+	sem_destroy(mutex);
+	
+	printf("\nLe programme s'est terminé proprement\n");
+	return EXIT_SUCCESS;
+}

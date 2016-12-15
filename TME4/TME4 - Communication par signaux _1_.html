@@ -1,0 +1,88 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1 style="text-align: center;" align="justify">TME4 - Gestion des signaux</h1>
+<h2 align="justify"><br>
+Objectifs</h2>
+<div align="justify">
+<ol>
+    <li>S'initier  à la communication inter-processus, au moyen de signaux.</li>
+    <li>Programmer des échanges de signaux basiques entre processus.</li>
+    <li>Mettre en place des gestionnaires de signaux dans les programmes.</li>
+</ol>
+</div>
+<div style="margin-left: 40px; text-align: justify;">
+<h2 align="justify">&nbsp;</h2>
+</div>
+<div style="text-align: justify;">
+<h2 align="justify">Remarques</h2>
+<div align="justify"><blockquote>&nbsp;     </blockquote></div>
+<blockquote>
+<p align="justify">a. Un grand merci à Luciana Arantes et Gérard Nowak, qui m'ont laissé piller sans vergogne leurs sujets d'exercices.</p>
+<p align="justify">b. Pour trouver les raccourcis claviers qui vous 
+permettront d'envoyer un signal facilement à un processus, vous pouvez 
+utiliser la commande <code>$ stty -a</code><br>
+Les raccourcis se trouvent dans les cchars : <code>SIGINT</code> (<code>cchar 'intr'</code>) est généralement associé à <code>ctrl-C</code>, et <code>SIGQUIT</code> (<code>cchar 'quit'</code>) à <code>ctrl-\</code></p>
+<p align="justify">c. Le masquage de signaux conduit souvent à des programmes qui ne peuvent plus être interrompus facilement (<code>SIGINT</code>). Dans une telle situation, il faut recourir à l'utilisation de <code>SIGKILL</code> depuis un terminal :</p>
+<div align="justify"><blockquote><code>$ kill -9 &lt;pid_pcs_condamne&gt;</code></blockquote></div>
+<blockquote> </blockquote>
+<p align="justify">&nbsp;</p>
+</blockquote></div>
+<h2 align="justify">Exercices</h2>
+<h3 align="justify">Exercice 1 : Premiers tests avec des signaux</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p align="justify"><a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME4/init-sigs.tgz">Téléchargez ici les codes source de mini-programmes divers</a>.</p>
+<p align="justify">Compilez-les, puis testez-les pour voir :</p>
+<div align="justify">
+<ol>
+    <li>s'ils se terminent d'eux-mêmes, ou s'ils ont besoin d'être débloqués à l'aide d'un (ou plusieurs) <code>SIGINT</code>,</li>
+    <li>si tous les affichages qu'ils comportent sont bien exécutés.</li>
+</ol>
+</div>
+<p align="justify">Expliquez brièvement le comportement de  chacun de ces mini-programmes.</p>
+</div>
+<h3 align="justify">Exercice 2 : Zombie vs. SIGKILL</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p align="justify">Compilez le <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME4/voodoo.c">code suivant</a>. Ce programme crée un processus zombie (un fils qui meurt sans <code>wait</code> de son père), observable à l'aide de la commande <code>$ps u</code> (status = <code>Z</code>)</p>
+<p align="justify">Tentez de forcer la terminaison du processus zombie avec un <code>SIGKILL</code>. Que se passe-t-il ?</p>
+</div>
+<h3 align="justify">Exercice 3 : Signaux pendants</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p align="justify">Ecrivez un programme <code>pending-signals</code> qui permet d'afficher si des signaux lui ont été envoyés, mais n'ont pas encore été pris en compte.</p>
+<p align="justify">Ce programme fonctionne de la manière suivante : il masque les signaux <code>SIGINT</code> et <code>SIGQUIT</code>, puis s’endort pendant 5 secondes à l'aide de la fonction <code>sleep</code>. A son réveil, le programme doit afficher la liste des signaux qui lui sont pendants.</p>
+<p align="justify">Que peut-il se passer si le programme démasque <code>SIGINT</code> et <code>SIGQUIT</code> avant d'afficher s'ils sont pendants ? Expliquez pourquoi.</p>
+</div>
+<h3 align="justify">Exercice 4 : Changement des routines de traitement par défaut des signaux (<code>SIG_IGN</code>)</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p align="justify">Ecrivez un programme <code>pending-signals-2</code> qui reprend le programme précédent, mais dont le comportement par défaut lors de la réception d'un <code>SIGINT</code> ou d'un <code>SIGQUIT</code> est de ne rien faire.</p>
+<p align="justify">Ce nouveau programme résout-il le problème de l'exercice 3 ? Justifiez votre réponse.</p>
+</div>
+<h3 align="justify">Exercice 5 : Changement du traitement par défaut des signaux (nouvelle routine)</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p align="justify">Ecrivez un programme <code>pending-signals-3</code> qui reprend le programme précédent, mais dont le comportement par défaut lors de la délivrance d'un <code>SIGINT</code> est d'incrémenter un compteur et d'afficher la valeur de ce compteur.</p>
+<p align="justify">Quelle sera la valeur maximale affichée pour le compteur ? Justifiez votre réponse.</p>
+<p align="justify">Ce nouveau programme résout-il le problème  de l'exercice 3 ? Justifiez  votre réponse.</p>
+</div>
+<h3 align="justify">Exercice 6 : Comptabilisation de signaux</h3>
+<div align="justify"><blockquote>Rédiger un programme <b><code>accountant</code></b> qui comptabilise le nombre de signaux délivrés.<br>
+Une fois lancé, <code>accountant</code> boucle indéfiniment en attente 
+de signaux. Pour chaque signal délivré, il incrémente deux compteurs : 
+un compteur global qui fait la somme de l'ensemble des signaux capturés,
+ et un compteur relatif à la valeur du signal délivré.</blockquote></div>
+<blockquote>
+<p align="justify">Le programme se termine lorsqu'il a délivré un nombre <code>MAX_INTR</code> de signaux <code>SIGINT</code>.
+ Il affiche alors l'ensemble de ses statistiques : la valeur de chacun 
+de ses compteurs relatifs, ainsi que celle de son compteur global.</p>
+</blockquote>
+<h3 align="justify">Exercice 7 : Espionnage de shell (revisité)</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p align="justify">Rédiger un programme <b><code>spy</code></b> qui se comporte comme une surcouche du shell.<br>
+Une fois lancé, <code>spy</code> récupère toute commande rentrée par l'utilisateur (cf. le squelette de programme à compléter "<a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME3/spy-incomplete.c"><code>spy-incomplete.c</code></a>") et <em><strong>prépare</strong></em> l'exécution de cette commande au moyen d'une fonction <code>exec</code> dans un processus fils.<br>
+On utilisera <code>execlp</code> pour les commandes entrées avec exactement un argument, <code>execvp</code> pour toutes les autres.</p>
+<p align="justify">Cependant un fils n'exécute pas sa commande 
+immédiatement après avoir été lancé. Au lieu de cela, il se met en 
+attente d'un signal de son père. Le programme principal attend que <code>NBUF</code>
+ commandes aient été entrées, puis notifie à tous ses fils qu'ils 
+peuvent exécuter leur commande. Une fois qu'une salve de commandes a été
+ lancée, le père attend que tous ses fils se soient terminés avant de 
+préparer la salve suivante.</p>
+<div align="justify"><blockquote>&nbsp;</blockquote></div>
+</div></body></html>

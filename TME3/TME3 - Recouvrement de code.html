@@ -1,0 +1,67 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1 style="text-align: center;">TME3 - Recouvrement de code et Gestion  de la mémoire</h1>
+<h2><br>
+Objectifs</h2>
+<ol>
+    <li>Approfondir les notions associées à la création de processus,  notamment la gestion de la mémoire et l'héritage.</li>
+    <li>Programmer des créations de processus et gérer la  synchronisation entre processus d'une même famille.</li>
+    <li>Mettre en place des recouvrements de code dans les programmes.</li>
+</ol>
+<div style="margin-left: 40px; text-align: justify;">&nbsp;</div>
+<div style="text-align: justify;">&nbsp;</div>
+<h2>Exercices</h2>
+<h3>Exercice 1 : Créations de processus avec passage de données</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Rédigez un programme qui crée une chaîne de <code><span class="style1">N_FILS</span></code>  processus (père crée un fils, fils crée un petit-fils, ...) à l'aide de  la fonction <code>fork</code>, puis affiche le <code>PID</code> de l'ensemble des descendants créés. A  cet effet, le programme principal prépare un tableau de <code>N_FILS</code> entiers  en utilisant la fonction <code>calloc</code>. Chaque processus de la chaîne va entrer son propre <code>PID</code> dans le tableau avant de créer un fils. Lorsque le dernier processus a été créé, celui-ci affiche l'ensemble des <code>PID</code>s contenus dans le  tableau.</p>
+<p>Serait-il possible de faire réaliser cet affichage par le programme principal ? Justifiez votre réponse.<br>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">Serait-il possible de faire réaliser cet affichage par le premier processus fils créé ? Justifiez votre réponse.<br>
+&nbsp; 
+</p>
+</div>
+<h3>Exercice 2 : Premier recouvrement de code</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Considérez le programme suivant (<a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME3/fork-exec.c">également téléchargeable</a>) :</p>
+<blockquote>
+<p><span style="font-family: Courier New;">int main(int argc, char **argv) {</span></p>
+<blockquote>
+<p><span style="font-family: Courier New;">struct timeval tv;<br>
+<br>
+printf("Resultat de la commande 'date'\n");<br>
+<br>
+execlp("date", "date", "+%s", NULL);<br>
+<br>
+printf("Comparaison avec la fonction 'gettimeofday'\n");<br>
+<br>
+gettimeofday(&amp;tv, NULL);<br>
+printf("%d\n", (int)tv.tv_sec);<br>
+<br>
+return 0;</span></p>
+</blockquote>
+<p><span style="font-family: Courier New;">}</span></p>
+</blockquote>
+<p>Quel est l'affichage qui résulte de l'exécution de ce programme ?  Expliquez pourquoi.</p>
+<p>Modifiez le programme pour que l'affichage se fasse correctement,  tout en garantissant que l'affichage de la comparaison avec <code>gettimeofday</code> se fait bien  après celui associé à la commande <code>date</code>.</p>
+</div>
+<h3>Exercice 3 : Compilation en parallèle</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Ecrivez un programme C qui prend en paramètre une série de fichiers  
+source .c, les compile chacun séparément et simultanément puis édite  
+les liens pour produire un exécutable. Ce programme doit lancer un  
+processus fils pour chacun des noms de fichiers passés en paramètre.  
+Chaque fils exécute le programme <code>gcc -c</code> sur le fichier dont
+ il s'occupe.  Le père attend la terminaison de tous ses fils; si 
+l'ensemble des fils  ont terminé sans erreur, le père réalise l'édition 
+de liens en exécutant <code> gcc</code> sur les fichiers .o produits par les fils.<br>
+Pour tester votre programme, vous pouvez utiliser les fichiers sources disponibles en cliquant <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME3/tme3-ex3.tgz">ici</a>.</p>
+</div>
+<h3>Exercice 4 : Boucle de recouvrement de code</h3>
+<div style="text-align: justify; margin-left: 40px;">
+<p>Rédigez un programme qui imprime son <code>PID</code>, puis se lance lui-même  au moyen de la fonction '<code>exec</code>' de votre choix. On fera en sorte que la  récursion s'arrête à la 5e itération.<br>
+Qu'observez-vous au niveau des PIDs affichés successivement ? Expliquez ce résultat.</p>
+</div>
+<h3>Exercice 5 : Espionnage de shell</h3>
+<blockquote>
+<p>Rédiger un programme <code>spy</code> qui se comporte comme une surcouche du  shell.<br>
+Une fois lancé, <code>spy</code> récupère toute commande rentrée par l'utilisateur  (cf. le squelette de programme à compléter <a href="http://australe.upmc.fr/access/content/group/LI356_01/Base%20de%20code/TME3/spy-incomplete.c"><code>spy-incomplete.c</code></a>) et lance l'exécution  de cette commande au moyen d'une fonction de la famille '<code>exec</code>'.<br>
+On utilisera <code>execlp</code> pour les commandes entrées avec exactement un  argument, et <code>execvp</code> pour toutes les autres.</p>
+</blockquote></body></html>

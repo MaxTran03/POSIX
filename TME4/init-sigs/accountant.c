@@ -1,0 +1,56 @@
+#define _POSIX_SOURCE 1
+
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
+#define MAX_INTR 10
+
+
+sigset_t sig;
+struct sigaction sigact;
+int cpt_glob = 0;
+int cpt_rel[33];
+
+void sigint_handler (int sig) {
+	int i;
+	for(i=1; i<=32; i++){
+		if(i == sig){
+			cpt_rel[i]++;
+			cpt_glob++;		
+		} 
+	}
+}
+
+int main () {
+	
+	sigemptyset (&sig);
+	sigprocmask (SIG_SETMASK, &sig, NULL);
+	sigact.sa_mask = sig;
+	sigact.sa_flags = 0;
+	sigact.sa_handler = sigint_handler;
+	
+	int k;
+	for(k=1; k<=32; k++){
+		sigaction (k, &sigact, NULL);
+	}
+	
+	while(1){
+		sigsuspend(&sig);
+		if(MAX_INTR == cpt_glob){
+			break;
+		}
+	}
+	
+	printf("\n\n");
+	
+	int m;
+	for(m=1; m<=32; m++)
+		if(cpt_rel[m]!= 0)
+			printf("Signal %d : compteur = %d\n",m,cpt_rel[m]);
+	
+	printf("\nCompteur global = %d\n\n",cpt_glob);
+	
+	return 0;
+	
+}

@@ -1,0 +1,61 @@
+CC=gcc -Wall
+BIN=bin
+INC=include
+LIB=lib
+OBJ=obj
+SRC=src
+
+
+all: directories ${BIN}/capitalize ${BIN}/conversion_client ${BIN}/multi_converter
+
+directories: ${OBJ} ${BIN} ${INC}
+
+${OBJ}:
+	mkdir ${OBJ}
+${BIN}:
+	mkdir ${BIN}
+${INC}:
+	mkdir ${INC}
+
+
+## Exercice 1 ##
+
+${OBJ}/capitalize.o: ${SRC}/capitalize.c
+	${CC} -c -o ${OBJ}/capitalize.o ${SRC}/capitalize.c
+
+${BIN}/capitalize: ${OBJ}/capitalize.o
+	${CC} -o ${BIN}/capitalize ${SRC}/capitalize.c -lrt	
+
+capitalize: ${BIN}/capitalize	
+
+
+## Exercice 2 ##
+
+${OBJ}/conversion_client.o: ${INC}/converters.h ${SRC}/conversion_client.c
+	${CC} -c -o ${OBJ}/conversion_client.o ${SRC}/conversion_client.c
+
+${BIN}/conversion_client: ${OBJ}/conversion_client.o
+	${CC} -o ${BIN}/conversion_client ${SRC}/conversion_client.c -lrt -lpthread
+
+
+conversion_client: ${BIN}/conversion_client
+
+
+${OBJ}/multi_converter.o: ${INC}/converters.h ${SRC}/multi_converter.c
+	${CC} -c -o ${OBJ}/multi_converter.o ${SRC}/multi_converter.c
+
+${BIN}/multi_converter: ${OBJ}/multi_converter.o
+	${CC} -o ${BIN}/multi_converter ${SRC}/multi_converter.c -lrt -lpthread
+
+multi_converter : ${BIN}/multi_converter
+
+
+## Nettoyage ##
+
+clean:
+	rm -f ${OBJ}/* ${BIN}/*
+
+cleanall:
+	rm -rf ${OBJ} ${BIN}
+	rm -f ${INC}/*~ ${SRC}/*~ *~
+

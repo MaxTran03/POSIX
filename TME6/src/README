@@ -1,0 +1,158 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+	exo3/affiche.h
+		Définitions (types et opérations) des fonctions affiche1, affiche2, affiche3 et affiche4
+		[Ex. 3]
+		
+	exo3/affiche1.c
+		Programme affichant la fonction
+		[Ex. 3]
+		
+	exo3/affiche2.c
+		Programme affichant la fonction
+		[Ex. 3]
+		
+	exo3/affiche3.c
+		Programme affichant la fonction
+		[Ex. 3]
+		
+	exo3/affiche4.c
+		Programme affichant la fonction
+		[Ex. 3]
+
+	src/fork-exec.c
+		Programme principal (main) pour faire l'affichage de la date en seconde
+		[Ex. 2]
+
+	src/spy-incomplete.c
+		Programme principal (main) pour tester si une matrice est magique
+		[Ex. 5]
+
+== Nouveaux fichiers codés ==
+
+	src/exo1.c
+		Programme permettant de créer une chaine de n fils processus à l'aide de la fonction fork, puis affiche le PID de l'ensemble des descendants créés.
+		[Ex. 1]
+		
+	src/exo2.c
+		Programme qui affiche la date avec deux commandes différentes
+		[Ex. 2]
+		
+	exo3/exo3.c
+		Programme qui permet de compiler les fichiers sources .c en paramètre
+		[Ex. 3]
+	
+	src/exo4.c
+		Programme qui affiche son PID et se lance lui-même au moyen de la fonction exec
+		[Ex. 4]
+		
+	src/spy-incomplete.c
+		Programme qui se comporte comme une surcouche du shell, et exécute les commandes entrées
+		[Ex. 5]
+
+== Directives de 'makefile.ini' ==
+
+
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+== Etat d'avancement ==
+
+
+	Tous les exercices sont terminés et marchent correctement ! 
+
+
+== Réponses ==
+
+
+	Exercice 1:
+	
+1)
+init-sig.1: Il n'y a pas d'affichage puisque la fonction pause() suspend le programme exécuté jusqu'à qu'il reçoit un signal.
+
+2)
+init-sig.2: Ce programme consiste à se terminer lorsqu'il reçoit le signal SIGINT. Tout autre signal "CTRL+Z" ou "CTRL+\" ne marche pas pour terminer le processus. Donc il n'y aura pas d'affichage après le premier sigsuspend(&sig).
+
+3)
+init-sig.3: Ce programme ne permet pas de terminer le processus avec un signal SIGINT, les autres signaux peuvent terminer le processus exécuté. Après un délai de 5 secondes, le signal alarm est ignoré.
+Donc il n'y aura pas d'affichage après le sigsuspend(&sig). Il faut donc utiliser CTRL+\
+
+4)
+init-sig.4: Ce programme consiste à changer l'action du signal, qui sera ignoré d'où l'affichage suivant:
+
+> AVANT sigsuspend
+> ^Cn = 0; Signal recu : 2
+> APRES 1er sigsuspend
+> ^C^C^\^\^Z
+
+Donc il faut ouvrir un autre terminal afin de tuer le processus. Le signal est ignoré car on entre dans le if:
+
+sigact.sa_handler = SIG_IGN;
+sigaction (SIGINT, &sigact, NULL);
+
+Si nous voulons entrer dans le else, il est nécéssaire de rajouter les lignes de code suivantes entre le premier sigsuspend et le deuxième printf:
+
+sigprocmask (SIG_SETMASK, &sig, NULL);
+sigact.sa_mask = sig;
+sigact.sa_flags = 0;
+sigact.sa_handler = sigint_handler;
+sigaction (SIGINT, &sigact, NULL);
+
+Afin de pouvoir refaire appel à la fonction et entrer dans le else pour modifier l'action du signal à son action par défaut.
+
+> AVANT sigsuspend
+> ^Cn = 0; Signal recu : 2
+> APRES 1er sigsuspend
+> ^Cn = 1; Signal recu : 2
+> APRES 2e sigsuspend
+> ^C
+> 3001048@ppti-14-303-12:/users/nfs/Etu8/3001048/LI356/TME4/init-sigs$
+
+
+5)
+init-sig.5: Ce programme attend toujours un signal alarm ou un signal SIGINT. Tous les 5 secondes, il y a un affichage pour l'alarme et un affichage à chaque signal SIGINT envoyé.
+
+	
+	Exercice 2:
+	
+Il n'est pas possible de tuer un processus zombie avec un SIGKILL. Le seul moyen est de tuer/terminer le processus père pour tuer le processus zombie.
+	
+	Exercice 3:
+
+Si on décide de démasquer SIGINT et SIGQUIT grâce à la ligne de code suivante:
+sigprocmask (SIG_UNBLOCK, &sig, NULL);
+
+Cela remet la constante SIG_UNBLOCK à 1 ce qui supprime de la liste des signaux pendants bloquants.
+Ils sont démasqués donc ils ne sont plus pendants.
+Donc on a pas d'affichage.
+
+	Exercice 4:
+
+Oui ce nouveau programme résout le problème de l'exercice 3, car on redéfinit le signal en SIG_IGN.
+
+	Exercice 5:
+	
+1) La valeur maximale affichée pour le compteur est 1 car en exécutant CTRL+C dans un laps de temps, on ne traite qu'une seule fois le signal c'est pourquoi on exécute 
+
+2) Oui ce nouveau programme résout bien le problème de l'exercice 3 puisque là aussi nous redefinissons le signal.
+
+
+
+
+
+
+

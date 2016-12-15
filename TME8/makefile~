@@ -1,0 +1,40 @@
+CC=gcc -Wall -ansi
+BIN=bin
+INC=include
+LIB=lib
+OBJ=obj
+SRC=src
+
+
+all: directories ${BIN}/single_converters
+
+directories: ${OBJ} ${BIN}
+
+${OBJ}:
+	mkdir ${OBJ}
+${BIN}:
+	mkdir ${BIN}
+
+
+${OBJ}/converters.o: ${INC}/converters.h ${SRC}/converters.c
+	${CC} -c -o ${OBJ}/converters.o ${SRC}/converters.c -I${INC}
+
+#${OBJ}/single_converters.o: ${INC}/converters.h ${SRC}/single_converters.c
+#	${CC} -c -o ${OBJ}/single_converters.o ${SRC}/single_converters.c -I${INC}
+	
+${BIN}/single_converters: ${OBJ}/converters.o
+	${CC} -o ${BIN}/single_converters ${SRC}/converters.c
+
+single_converters: ${BIN}/single_converters
+
+#runstack: ${BIN}/single_converters
+#	echo "Testing single_converters"
+#	${BIN}/single_converters
+
+clean:
+	rm -f ${OBJ}/* ${BIN}/*
+
+cleanall:
+	rm -rf ${OBJ} ${BIN}
+	rm -f ${INC}/*~ ${SRC}/*~ *~
+

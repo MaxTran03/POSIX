@@ -1,0 +1,56 @@
+#define _POSIX_SOURCE 1
+
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+sigset_t sig;
+sigset_t sig2;
+struct sigaction sigact;
+struct sigaction sigact2;
+
+void f(){}
+
+void mysleep(int sec){
+
+	/* Mettre à 0 tous les signaux et à 1 pour SIGALRM */
+	sigemptyset (&sig);
+	sigaddset(&sig, SIGALRM);
+	sigprocmask (SIG_BLOCK, &sig, &sig2);
+
+	/* Redéfinition de l'action */
+	sigact.sa_mask = sig;
+	sigact.sa_flags = 0;
+	sigact.sa_handler = f;
+	
+	/* Stocker SIGALRM dans sigact2 */
+	sigaction (SIGALRM, &sigact, &sigact2);
+	
+	printf("Avant démasquage\n");
+	
+	sigdelset(&sig, SIGALRM);
+	printf("Avant alarm\n");
+	alarm(sec);
+	sigsuspend(&sig); /* Suspend le programme jusqu'à qu'un signal qui n'est pas dans sig arrive */
+	
+	printf("Après sigsuspend\n");
+	
+	/* Remettre par défaut les signaux */
+	sigprocmask (SIG_SETMASK, &sig2, NULL);
+	
+	/* Récupérer l'ancienne action, sigact2 */
+	sigaction (SIGALRM, &sigact2, NULL);
+}
+
+int main(){
+	
+	printf("\nAvant mysleep : \n\n");
+	mysleep(2);
+	printf("\nAprès mysleep\n");
+	
+	return 0;
+	
+}

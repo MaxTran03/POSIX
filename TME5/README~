@@ -1,0 +1,65 @@
+== Participants : 2 ==
+
+	Binome 1: Maxime TRAN 3000738
+	Binome 2: Tacfarinas AINAS 3001048
+	
+
+== Fichiers inclus ==
+
+
+== Nouveaux fichiers codés ==
+
+	src/mywait.c
+		Programme permettant à un processus père d'attendre la terminaison de son fils sans prendre connaissance de l'état de terminaison.
+		[Ex. 1]
+		
+	src/mysleep.c
+		Redéfinition du sleep en utilisant la fonction alarm et le signal SIGALRM
+		[Ex. 2]
+		
+	src/synchro.c
+		Programme qui permet de synchroniser les processus
+		[Ex. 3]
+	
+	src/tempo.c
+		Programme qui arme un temporisateur sur 5 secondes, puis reste suspendu en attente de terminaison tant que l'une des conditions suivantes n'est pas remplie:
+		1. délivrance de NFIN signaux SIGINT
+		2. ou réception d'un signal SIGALRM
+		[Ex. 4]
+		
+
+== Directives de 'makefile.ini' ==
+
+
+	directories
+		Création des répertoires temporaires s'ils n'existent pas déjà
+
+	clean
+		Suppression de tous les binaires, de tous les fichiers objet, et de toutes les bibliothèques
+
+
+	cleanall
+		Suppression des répertoires et fichiers temporaires
+
+
+== Etat d'avancement ==
+
+
+	Tous les exercices sont terminés et marchent correctement ! 
+
+
+== Réponses ==
+
+
+	Exercice 1:
+
+On ne peut pas faire une implémentation pour plusieurs fils.
+Si on a plusieurs processus fils qui se terminent en même temps et envoient leur signal SIGCHLD, le handler ne peut pas prendre toutes les occurences des processus fils ! Il ne peut en traiter qu'un seul. Même problème avec les compteurs du TME précédent.
+
+
+	Exercice 3:
+	
+Le nombre minimum de signaux requis pour obtenir une telle synchronisation est 2.
+Le père recoit les signaux des deux autres processus fils une fois qu'ils ont terminé le premier calcul1() ainsi ils pourront tous exécuter le calcul2()
+
+
